@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+
+set -e
+
+SOCKET="$XDG_RUNTIME_DIR/sxhkd.sock"
+PIDFILE="$XDG_RUNTIME_DIR/sxhkd-eventhandler.pid"
+
+handler()
+{
+  local state='on'
+
+  if pgrep -x polybar; then
+    "$XDG_CONFIG_HOME/polybar/scripts/sxhkd.sh" init
+  fi
+
+  while read -r event <"$SOCKET"; do
+    printf 'Event received: "%s"\n' "$event" >&2
+    case "$event" in
+      "xReload")
+        notify-send -u low "sxhkd eventhandler received 'xReload'"
+        "$XDG_CONFIG_HOME/polybar/scripts/sxhkd.sh" reset
+        pkill -USR1 -x sxhkd || :
+        ;;
+
+      "xToggle")
+        case "$state" in
+          on) state='off' ;;
+          off) state='on' ;;
+        esac
+
+        "$XDG_CONFIG_HOME/polybar/scripts/sxhkd.sh" "$state" || :
+        pkill -USR2 -x sxhkd || :
+        ;;
+
+      "BBegin chain")
+        # notify-send "$event"
+        polybar-helper monitor-pid | xargs -I{} \
+          polybar-msg -p {} action "#sxhkd-mode.module_show" >/dev/null
+        ;;
+
+      "EEnd chain")
+        polybar-helper monitor-pid | xargs -I{} \
+          polybar-msg -p {} action "#sxhkd-mode.module_hide" >/dev/null
+        ;;
+    esac
+  done
+}
+
+main()
+{
+  case "$1" in
+    start)
+      if [ -e "$PIDFILE" ] && pgrep -F "$PIDFILE" >/dev/null; then
+        echo "error: already running" >&2
+        exit 1
+      elif [ ! -p "$SOCKET" ]; then
+        echo "error: socket does not exist" >&2
+        exit 1
+      fi
+
+      handler &
+      echo $! >"$PIDFILE"
+      ;;
+
+    stop)
+      case "$2" in
+        -f | --force)
+          rm -fv "$PIDFILE"
+          pkill -e -f bash.+sxhkd/eventhandler
+          ;;
+
+        *)
+          if [ -e "$PIDFILE" ]; then
+            pkill -e -F "$PIDFILE" || :
+            rm -fv "$PIDFILE"
+          fi
+          ;;
+      esac
+      ;;
+
+    socket-path)
+      echo "$SOCKET"
+      ;;
+
+    socket-write)
+      case "$2" in
+        "xReload") ;;
+        "xToggle") ;;
+        *)
+          echo "error: Invalid custom command '$2'" >&2
+          exit 1
+          ;;
+      esac
+      echo "$2" >"$SOCKET"
+      ;;
+
+    kill)
+      rm -fv "$PIDFILE"
+      pkill -e -f bash.+sxhkd/eventhandler
+      ;;
+
+    *)
+      echo "Usage: ${0##*/} start|stop [-f]|socket-path|socket-write|kill" >&2
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"

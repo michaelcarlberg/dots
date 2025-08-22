@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if ! flatpak list | grep -q com.microsoft.Teams; then
+  flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+  flatpak install flathub com.microsoft.Teams
+fi
+
+flatpak run com.microsoft.Teams

@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+
+set -xe
+
+exec &>"$XDG_CACHE_HOME/xorg/xinitrc.log"
+
+if [ -d /etc/X11/xinit/xinitrc.d ]; then
+  for f in /etc/X11/xinit/xinitrc.d/*; do
+    if [ -r "$f" ]; then
+      # shellcheck source=/dev/null
+      source "$f"
+    fi
+  done
+  unset f
+fi
+
+xrdb -merge -I"$XDG_CONFIG_HOME/xorg" "$XDG_CONFIG_HOME/xorg/xresources"
+
+if [ "$xrandr_command" ]; then
+  eval "$xrandr_command"
+else
+  # xrandr --setprovideroutputsource modesetting NVIDIA-0 || :
+  xrandr --auto || :
+
+  if xrandr -q | grep -q "^DP-1 connected"; then
+    xrandr --output DP-1 --primary --auto --right-of eDP-1
+    xrandr --output DP-1 --gamma 0.8 --brightness 1.0
+  elif xrandr -q | grep -q -E "^HDMI-1 connected"; then
+    xrandr --output HDMI-1 --primary --auto --left-of eDP-1
+    xrandr --output HDMI-1 --gamma 0.8 --brightness 1.0
+  elif xrandr -q | grep -q -E "^eDP-1 connected"; then
+    xrandr --output eDP-1 --primary --auto --mode 1920x1200
+  fi
+
+  if xrandr -q | grep -q -E "^DP-3-1 connected"; then
+    xrandr --output DP-3-1 --above eDP-1 --auto
+  fi
+  if xrandr -q | grep -q -E "^DP-3-2 connected"; then
+    xrandr --output DP-3-2 --left-of DP-3-1 --auto
+  fi
+fi
+
+xinput --set-prop "TPPS/2 Elan TrackPoint" "libinput Accel Speed" -0.25
+
+xsetroot -cursor_name left_ptr
+xsetroot -solid '#0e0f13'
+
+# if [ -x "$HOME/.fehbg" ]; then
+#   "$HOME/.fehbg"
+# elif [ -r "$HOME/.wallpaper" ]; then
+#   feh --bg-center "$HOME/.wallpaper"
+# fi
+
+xset s off
+xset b off
+xset -dpms
+xset +fp "$XDG_DATA_HOME/fonts"
+xset fp rehash
+
+autocutsel -selection PRIMARY -fork
+
+[ -x "$XDG_CONFIG_HOME/xorg/configure-keyboard.sh" ] \
+  && "$XDG_CONFIG_HOME/xorg/configure-keyboard.sh"
+[ -x "$XDG_CONFIG_HOME/xorg/configure-touchpad.sh" ] \
+  && "$XDG_CONFIG_HOME/xorg/configure-touchpad.sh"
+
+if [ -L "$SVDIR_X11/bspwm" ]; then
+  exec dbus-launch --exit-with-x11 -- runsvdir "$HOME"/.runit/runsvdir.x11 2>&1
+else
+  exec dbus-launch --exit-with-x11 -- /bin/bspwm -c "$XDG_CONFIG_HOME/bspwm/bspwmrc" 2>&1
+fi

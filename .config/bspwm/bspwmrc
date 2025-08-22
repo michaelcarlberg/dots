@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+
+[ "$DEBUG" ] && set -x
+
+daemonize_unless_sv()
+{
+  if ! sv -x check "$1" 2>/dev/null | grep -q 'ok: run'; then
+    daemonize "$@" &
+  fi
+}
+
+# daemonize()
+# {
+#   local cmd="${1##*/}"
+#   if ! command -v "$cmd" >/dev/null; then
+#     exit 127
+#   fi
+#   pkill -e -x "$cmd" || :
+#   nohup "$@" &>"$XDG_CACHE_HOME/${cmd}.log" &
+#   echo "$!" >"$XDG_RUNTIME_DIR/${cmd}.pid"
+#   pgrep -a -F "$XDG_RUNTIME_DIR/${cmd}.pid"
+# }
+
+bspwm-helper list-monitors | while read -r monitor; do
+  bspc monitor "$monitor" --reset-desktops 1 2 3 4 5
+done
+
+bspc config normal_border_color '#464b6a'
+bspc config active_border_color '#464b6a'
+bspc config focused_border_color "#7777ff"
+bspc config presel_feedback_color "#7777ff"
+
+bspc config split_ratio 0.5
+bspc config pointer_modifier mod1
+bspc config ignore_ewmh_focus true
+bspc config automatic_scheme alternate
+
+bspc config top_padding 1
+bspc config bottom_padding 1
+bspc config left_padding 1
+bspc config right_padding 1
+
+bspc config window_gap -1
+bspc config border_width 1
+
+bspc config single_monocle true
+bspc config gapless_monocle false
+bspc config borderless_monocle true
+
+bspc rule -a KeePassXC state=floating center=true
+bspc rule -a Veracrypt state=floating center=true
+bspc rule -a Thunar state=floating center=true rectangle=800x475+0+0
+bspc rule -a TelegramDesktop state=floating focus=off rectangle=380x600+2000+100
+bspc rule -a GoogleChrome state=floating center=true
+bspc rule -a Eog state=floating center=true
+bspc rule -a Viewnior state=floating center=true
+bspc rule -a gnome-text-editor state=floating center=true
+bspc rule -a Evince state=floating center=true
+bspc rule -a feh state=floating center=true
+bspc rule -a org.gnome.Nautilus state=floating center=true
+bspc rule -a gnome-calculator state=floating center=true
+bspc rule -a Pavucontrol state=floating center=true
+bspc rule -a Vncviewer state=floating center=true
+bspc rule -a MEGAsync state=floating center=true
+bspc rule -a floating state=floating center=true
+bspc rule -a screenkey --unmanage
+bspc rule -a Nm-connection-editor state=floating center=true
+bspc rule -a qutebrowser state=floating center=true
+bspc rule -a Navigator:Firefox state=floating center=true rectangle=120x450+0+0
+bspc rule -a Yad state=floating center=true
+bspc rule -a '*:Edit_with_Emacs_FRAME' state=floating center=true rectangle=785x450
+# bspc rule -a xdg-emacs state=floating center=true rectangle=580x800+0+0
+# bspc rule -a Emacs:which-key state=floating rectangle=1918x100+1921+980 focus=off
+bspc rule -a 'Emacs:emacs:*' state=fullscreen
+bspc rule -a '*:*:Save as' state=floating center=true
+bspc rule -a 'Xfd:xfd:*' state=floating center=true
+bspc rule -a scrcpy state=pseudo_tiled center=true border=off
+bspc rule -a 'com-mobilityguard-client-cmdclient-MGJavaClientMain' state=floating center=true
+bspc rule -a zenity state=floating center=true
+
+bspc wm -o
+
+# daemonize_unless_sv picom
+daemonize_unless_sv xbanish -i mod1 -i control -i shift
+daemonize_unless_sv sxhkd -t 1 -a Escape
+daemonize_unless_sv polybar -l warning -r main
+
+# if bspwm-helper has-monitor HDMI-1; then
+#   MONITOR=HDMI-1 daemonize_unless_sv polybar -l warning -r alt
+# elif bspwm-helper has-monitor DP-1; then
+#   MONITOR=DP-1 daemonize_unless_sv polybar -l warning -r alt
+# fi
+
+# pkill -e -f autohide.sh || :
+# "$XDG_CONFIG_HOME/polybar/scripts/autohide.sh" &
+
+echo 'bspwmrc done.'

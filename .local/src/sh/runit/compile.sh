@@ -1,0 +1,1 @@
+/home/jaagr/.local/src/sh/shellscripts/compile.sh

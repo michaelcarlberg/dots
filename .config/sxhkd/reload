@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -xe
+
+notify()
+{
+  case "$1" in
+    0) notify-send -u low "sxhkd reloaded" ;;
+    *) notify-send -u low "failed to reload sxhkd($1)" ;;
+  esac
+}
+
+trap 'notify $?' EXIT
+
+if command -v sv >/dev/null && sv -x check sxhkd; then
+  sv -x restart sxhkd
+elif [ -r "$XDG_RUNTIME_DIR"/sxhkd.pid ]; then
+  pkill -USR1 -e -F "$XDG_RUNTIME_DIR"/sxhkd.pid
+elif pgrep -x sxhkd >/dev/null; then
+  pkill -USR1 -e -x sxhkd
+else
+  exit 1
+fi

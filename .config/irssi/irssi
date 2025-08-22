@@ -1,0 +1,33 @@
+#!/usr/bin/env python
+import os, re, sys
+from tempfile import mkstemp
+
+znc_password = "" # os.popen('keepassxc-cli show -s ~/.keepass/vault.kdbx misc/znc | sed -nr "s/^Password: (.+)/\1/p" | tr -d "\n"').read()
+nickserv_password = znc_password
+
+configuration_file = '%s/irssi/config' % os.environ['XDG_CONFIG_HOME']
+irssi_base_dir = os.path.dirname(configuration_file)
+
+# read current config
+with open(configuration_file) as f:
+    config = f.read()
+
+# replace placeholder with real password
+config = re.sub('ZNC_PASSWORD', znc_password, config)
+config = re.sub('NICKSERV_PASSWORD', nickserv_password, config)
+
+# store config in temporary file
+fd, temp_config = mkstemp()
+
+with open(temp_config, 'w') as f:
+    f.write(config)
+
+# run irssi
+status = os.system('/usr/bin/irssi --config=%s --home=%s 2>>%s/logs/stderr' % (temp_config, irssi_base_dir, irssi_base_dir))
+
+# clean up
+print("cleaning up (exit=%d)..." % (status,))
+os.close(fd)
+os.remove(temp_config)
+
+sys.exit(status)

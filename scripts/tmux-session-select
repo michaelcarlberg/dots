@@ -1,0 +1,47 @@
+#!/bin/bash
+
+main() {
+  if ! tmux list-sessions &>/dev/null; then
+    exec tmux new-session -s "main"
+  fi
+
+
+  local -i counter=1
+  local -a sessions=()
+  local filter='#{session_id},#{session_name},#{session_windows},#{session_attached}'
+
+  echo "Select an option"
+  echo
+
+  for info in $(tmux list-session -F "${filter}"); do
+    local -a session
+    IFS=','
+    read -r -a session <<< "${info}"
+
+    printf '    %d) attach "%s" [id=%s, windows=%s, clients=%s]\n' ${counter} \
+      "${session[1]}" \
+      "${session[0]}" \
+      "${session[2]}" \
+      "${session[3]}"
+    sessions+=("${session[0]}")
+
+    (( counter+=1 ))
+  done
+
+  printf '    %d) create new session\n\n' ${counter}
+
+  while :; do
+    echo -n "> "
+    read -r input
+
+    if [ "$input" = "$counter" ]; then
+      exec tmux new-session -s "$counter"
+    elif (( input > 0 && input <= counter )); then
+      exec tmux attach-session -t "${sessions[$((input-1))]}"
+    fi
+
+    echo "Invalid option" >&2
+  done
+}
+
+main "$@"

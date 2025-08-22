@@ -1,0 +1,10 @@
+[Unit]
+Description=Terminates stale tmux sessions
+
+[Service]
+Type=simple
+ExecStart=/home/jaagr/.local/bin/tmux-cleanup.sh
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

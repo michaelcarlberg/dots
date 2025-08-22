@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+  if command -v duf >/dev/null; then
+    exec duf -hide special
+  else
+    exec df -h -T
+  fi
+else
+  exec /usr/bin/df "$@"
+fi

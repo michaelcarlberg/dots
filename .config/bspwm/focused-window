@@ -1,0 +1,3 @@
+#!/bin/bash
+set -e
+exec xdotool getactivewindow getwindowname | grep -i -q "$*"

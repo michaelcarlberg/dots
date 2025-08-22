@@ -1,0 +1,70 @@
+#!/bin/bash
+
+if [ ! -d "$1" ]; then
+  echo "Error: $1 is not a dir" >&2
+  exit 1
+fi
+
+find "$1" -type f -exec shred -uvz {} \;
+rm -r "$1"
+
+# fn()
+# {
+#   echo a $? >&2
+#   sleep 2
+#   echo b $? >&2
+#
+#   # if [ ! -d "$1" ]; then
+#   #   echo "Error: $1 is not a dir" >&2
+#   #   exit 1
+#   # fi
+#   #
+#   # find "$1" -type f -exec shred -uvz {} \;
+#   # rmdir "$1"
+# }
+#
+# echo "res=$(
+#   zenity --progress \
+#     --title="Shredding" \
+#     --text="Shredding directory..." \
+#     --percentage=0 \
+#     --pulsate \
+#     --auto-close
+# )"
+
+# pid=$!
+# wait -n "$pid"
+
+# case $? in
+#   0)
+#     zenity --title="Shredding" --text="Directory removed." --modal --timeout=1 --info
+#     exit 0
+#     ;;
+#   *)
+#     echo "\$? = $?" >&2
+#     set -x
+#     pkill -9 -P $$
+#     exit 1
+#     ;;
+# esac
+
+# case $? in
+#   0)
+#     echo '$?: 0' >&2
+#     zenity --title="Shredding" --text="Directory removed." --modal --timeout=1 --info
+#     exit 0
+#     ;;
+#
+#   129)
+#     echo 129 >&2
+#     pkill -9 -P "$pid"
+#     zenity --title="Shredding" --text="Cancelled." --modal --timeout=1 --info
+#     exit 1
+#     ;;
+#
+#   *)
+#     echo "\$?: $?" >&2
+#     zenity --title="Shredding" --text="An error occurred: $?" --modal --timeout=1 --error
+#     exit 1
+#     ;;
+# esac

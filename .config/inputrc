@@ -1,0 +1,92 @@
+$include /etc/inputrc
+
+set bell-style none
+set editing-mode vi
+set visible-stats off
+set colored-stats on
+set completion-prefix-display-length 3
+set show-all-if-unmodified on
+set show-all-if-ambiguous on
+set completion-ignore-case on
+set completion-map-case on
+set menu-complete-display-prefix on
+set mark-symlinked-directories on
+set match-hidden-files off
+
+set show-mode-in-prompt on
+
+$if term=linux
+  set vi-ins-mode-string \1\e[?0c\e[0;31m\2 >\1\e[0m\2
+  set vi-cmd-mode-string \1\e[?8c\e[0;33m\2 >\1\e[0m\2
+$else
+  set vi-ins-mode-string \1\e[0;31m\2 λ\1\e[0m\e[6 q\2
+  set vi-cmd-mode-string \1\e[0;33m\2 λ\1\e[0m\e[2 q\2
+$endif
+
+# Control-u: kill-whole-line
+# Control-w: backward-kill-word
+Control-k: kill-whole-line
+
+set keymap vi-command
+
+Control-a: beginning-of-line
+Control-e: end-of-line
+
+"\C-x\C-r": re-read-init-file
+
+# clear line and enter insert mode
+"\C-d": "0Di"
+
+"\es": forward-search-history
+
+set keymap vi-insert
+
+Control-g: kill-whole-line
+Control-d: kill-whole-line
+Control-a: beginning-of-line
+Control-e: end-of-line
+Control-h: beginning-of-line
+Control-f: end-of-line
+Control-l: clear-screen
+Control-t: possible-completions
+
+# Tab/S-Tab
+Tab: menu-complete
+"[Z": menu-complete-backward
+
+# Home/End
+"\e[1~": beginning-of-line
+"\e[4~": end-of-line
+# PageUp/-Down
+"\e[5~": previous-history
+"\e[6~": next-history
+#"\e[5~": beginning-of-history
+#"\e[6~": end-of-history
+
+"\C-p": history-search-backward
+"\C-n": history-search-forward
+
+"\C-x\C-r": re-read-init-file
+"\C-x\C-o": menu-complete
+"\C-x\C-e": history-and-alias-expand-line
+
+"\C-x\C-p": "0isrc "
+"\C-x\C-d": "0isd "
+"\C-x\C-g": "$a | grep -E ""i"
+"\C-x\C-s": "0isudo "
+
+"\C-x0": " >/dev/null 2>&1"
+"\C-x'": "bi\"\ewwa\""
+
+"\C-x?": "0iman $a"
+"\C-x": "0iman $a"
+
+# Esc S: redo with sudo0
+"\eS": "kisudo "
+# kk: redo previous command
+"kk": "k"
+
+"\es": forward-search-history
+
+# unset 
+"\C-j": 

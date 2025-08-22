@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+if [ $# -gt 0 ]; then
+  printf "%d\n" "$1" | "$0"
+  exit $?
+fi
+
+cd ~ || exit 1
+
+export DISPLAY=:0
+export XAUTHORITY="${XDG_RUNTIME_DIR}/Xauthority"
+
+if [ ! "$XINITRC" ]; then
+  cat <<-EOF
+
+
+	  1) launch bspwm
+	  2) launch exwm
+
+	EOF
+
+  while [ ! "$XINITRC" ]; do
+    read -n1 -r -p "Enter: " pick
+    case "$pick" in
+      1) export XINITRC="${XDG_CONFIG_HOME}/xorg/xinitrc" ;;
+      2) export XINITRC="${XDG_CONFIG_HOME}/xorg/xinitrc.exwm" ;;
+      q)
+        printf '\nAborted!\n'
+        exit 1
+        ;;
+      *) printf "\r\nInvalid option '%s'\n" "$pick" ;;
+    esac
+  done
+fi
+
+exec xinit

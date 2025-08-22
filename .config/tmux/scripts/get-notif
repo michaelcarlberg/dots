@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+if [ ! -p "$XDG_RUNTIME_DIR/tmux-notif.fifo" ]; then
+  rm -f "$XDG_RUNTIME_DIR/tmux-notif.fifo"
+  mkfifo "$XDG_RUNTIME_DIR/tmux-notif.fifo"
+fi
+
+if read -r -t 0 <"$XDG_RUNTIME_DIR/tmux-notif.fifo"; then
+  while read -r line <"$XDG_RUNTIME_DIR/tmux-notif.fifo"; do
+    echo "$line"
+  done
+else
+  echo "no notifications..."
+fi

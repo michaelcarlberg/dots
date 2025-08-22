@@ -1,0 +1,73 @@
+! vim:foldmethod=marker
+
+!! CONFIGURE MODIFIERS {{{
+!
+!! ref: https://stackoverflow.com/questions/10060262/make-alt-r-an-alt-a-modifier-key-instead-of-a-meta-m-modifier-key
+!!
+!! Implement the following layout:
+!!     Hyper A S D F ...
+!!     Shift  Z X C V B N M ...                  Shift
+!!     Control Super Alt [ Space ] Alt Super Control
+!
+!! step 1
+!clear Control
+!clear Lock
+!clear mod1
+!clear mod2
+!clear mod3
+!clear mod4
+!clear mod5
+!
+!! step 2: (test keycodes using: xev -event keyboard)
+!keycode  37 = Control_L
+!! keycode  50 = Shift_L
+!! keycode  62 = Shift_R
+!keycode  64 = Meta_L
+!keycode 105 = Control_R
+!keycode 108 = Meta_R
+!keycode 133 = Super_L
+!keycode 134 = Super_R
+!! remap caps
+!keycode  66 = Hyper_L
+!
+!! step 3
+!add Control = Control_L Control_R
+!add mod1    = Meta_L Meta_R Meta_L Meta_R
+!add mod2    = Super_L Super_R Super_L Super_R
+!add mod3    = Num_Lock
+!add mod4    = Alt_L Alt_R Alt_L Alt_R
+!add mod5    = Hyper_L Hyper_R
+!
+!! }}}
+
+! SPACE AS MODIFIER {{{
+
+! keycode 65 = Hyper_L
+! remove mod4 = Hyper_L
+! add Control = Hyper_L
+! keycode any = space
+
+! }}}}
+
+! CAPS LOCK AS MODIFIER {{{
+
+! keycode 65 = Hyper_L
+! remove mod4 = Hyper_L
+! add Control = Hyper_L
+! ! keycode any = space
+! keycode 66 = Hyper_L
+
+! add mod5 = Hyper_L Hyper_L Hyper_L Hyper_L
+! remove mod5 = Hyper_L Hyper_L Hyper_L Hyper_L
+!remove mod5 = Super_L Super_L Super_L Super_L
+! add mod5 = Hyper_L
+! remove mod1 = Alt_R
+! keycode 108 = Super_R
+!
+! add mod4 = Super_R Super_R Super_R Super_R
+! add mod1 = Super_L
+!
+add mod4 = Super_R Super_R Super_R Super_R
+add mod1 = Super_L
+
+! }}}}

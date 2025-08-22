@@ -1,0 +1,23 @@
+---
+version: "3"
+services:
+  postfix:
+    image: takeyamajp/postfix
+    ports:
+      - "8025:25"
+      - "8587:587"
+      - "8465:465"
+    # volumes:
+    #   - /my/own/certs:/ssl_certs
+    #   - /my/own/keys:/dkim_keys
+    environment:
+      TIMEZONE: "Europe/Stockholm"
+      HOSTNAME: "smtp-mail.outlook.com"
+      DOMAIN_NAME: "outlook.com"
+      MESSAGE_SIZE_LIMIT: "10240000"
+      AUTH_USER: "norrlandskanalen99@outlook.com"
+      AUTH_PASSWORD: "jetLI123"
+      DISABLE_SMTP_AUTH_ON_PORT_25: "true"
+      ENABLE_DKIM: "false"
+      # DKIM_KEY_LENGTH: "1024"
+      # DKIM_SELECTOR: "default"

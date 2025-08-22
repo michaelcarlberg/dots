@@ -1,0 +1,16 @@
+#!/bin/bash
+
+while getopts ":n:" opt; do
+  case ${opt} in
+    n) title="$OPTARG" ;;
+    :) echo "Invalid option: $OPTARG requires an argument" >&2 ;;
+    *) echo "Invalid option: $OPTARG" >&2 ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+if [ "$title" ]; then
+  xdotool search --class --name "$title" windowactivate && exit 0
+fi
+
+exec /usr/bin/alacritty --class floating,Alacritty -T "$title" -e bash -c "$*"

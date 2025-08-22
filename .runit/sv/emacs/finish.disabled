@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -e
+
+/bin/emacsclient -e '(kill-emacs)' 2>/dev/null
+
+# sv -w600 force-stop "$SVDIR/emacs"
+# sv exit "$SVDIR/emacs"

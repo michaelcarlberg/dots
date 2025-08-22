@@ -1,0 +1,6 @@
+#!/bin/sh
+# shellcheck disable=2034
+
+LOGGING_ENABLE='true'
+
+LOG_DIR="$HOME/.local/var/log/emacs"

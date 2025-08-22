@@ -1,0 +1,179 @@
+#!/usr/bin/env bash
+
+_polybar_helper_monitors()
+{
+  xrandr --current | grep ' connected' | cut -d' ' -f1 | sort -u
+}
+
+_polybar_helper_bars()
+{
+  local config_file="$XDG_CONFIG_HOME/polybar/config.ini"
+  for ((i = 0; i < COMP_CWORD; i++)); do
+    if [ "${COMP_WORDS[i]}" = '-c' ]; then
+      config_file="${COMP_WORDS[i + 1]}"
+      break
+    fi
+  done
+  [ -r "$config_file" ] && sed -nE 's|[[:space:]]*\[bar/([^\]+)\][[:space:]]*$|\1|p' "$config_file"
+}
+
+_polybar_helper()
+{
+  local commands='hide
+                  launch
+                  list-config-bars
+                  list-monitor-bars
+                  monitor
+                  notify
+                  pid
+                  monitor-pid
+                  ipc-content
+                  reload
+                  show
+                  toggle
+                  toggle-volmod
+                  window-id
+                  logs'
+
+  local prev="${COMP_WORDS[COMP_CWORD - 1]}"
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+
+  alias_cmd="$(command -v "${COMP_WORDS[0]}" 2>/dev/null | sed -nr "/^alias/s/.+ ([^']+)'$/\1/p")"
+  if [ "$alias_cmd" ]; then
+    prev="$alias_cmd"
+  fi
+
+  case "${COMP_WORDS[1]}" in
+    toggle | show | hide)
+      if [ "${COMP_WORDS[2]:0:1}" = '-' ]; then
+        prev="${COMP_WORDS[1]}"
+      fi
+      ;;
+
+    logs)
+      if [ "${COMP_WORDS[2]}" = '-r' ]; then
+        prev='logs'
+      fi
+      ;;
+
+    window-id)
+      if [ "${COMP_WORDS[COMP_CWORD - 2]}" = '-c' ]; then
+        prev='window-id'
+      fi
+      case "$prev" in
+        -m)
+          monitors="$(_polybar_helper_monitors)"
+          mapfile -t COMPREPLY < <(compgen -W "$monitors" -- "$cur")
+
+          if [ ${#COMPREPLY[@]} -eq 0 ]; then
+            mapfile -t COMPREPLY < <(compgen -W "$monitors" -- "${cur^^}")
+          fi
+          ;;
+
+        -p) mapfile -t COMPREPLY < <(compgen -W "$(_polybar_helper_bars)" -- "$cur") ;;
+
+        -* | window-id)
+          if [ "${cur:0:1}" = "-" ]; then
+            mapfile -t COMPREPLY < <(compgen -W "-m -p" -- "$cur")
+          else
+            mapfile -t COMPREPLY < <(compgen -W "$(_polybar_helper_bars)" -- "$cur")
+          fi
+          ;;
+      esac
+      return
+      ;;
+
+    launch)
+      if [ "${COMP_WORDS[COMP_CWORD - 2]}" = '-c' ]; then
+        prev="${COMP_WORDS[1]}"
+      fi
+      case "$prev" in
+        -c) mapfile -t COMPREPLY < <(compgen -f -- "$cur") ;;
+        -* | launch)
+          if [ "${cur:0:1}" = "-" ]; then
+            mapfile -t COMPREPLY < <(compgen -W "-d -f -r -c" -- "$cur")
+          else
+            mapfile -t COMPREPLY < <(compgen -W "$(_polybar_helper_bars)" -- "$cur")
+          fi
+          ;;
+      esac
+      return
+      ;;
+
+    notify)
+      COMPREPLY=()
+
+      case "$prev" in
+        -u)
+          mapfile -t COMPREPLY < <(compgen -W "low normal critical" -- "$cur")
+          return
+          ;;
+
+        -q) ;;
+
+        -) COMPREPLY=(-u -q) ;;
+
+        notify | low | normal | critical) ;;
+
+        *) return ;;
+      esac
+
+      case "$cur" in
+        -*) mapfile -t COMPREPLY < <(compgen -W "-q -u" -- "$cur") ;;
+        *) mapfile -t COMPREPLY < <(compgen -W "$(_polybar_helper_bars)" -- "$cur") ;;
+      esac
+
+      return
+      ;;
+  esac
+
+  case "$prev" in
+    logs)
+      if [ "${cur:0:1}" = '-' ]; then
+        COMPREPLY=(-r)
+      else
+        logfiles="$(find "$XDG_CACHE_HOME/polybar"/*.log -printf "%f\n")"
+        if [[ ${COMP_WORDS[*]} =~ (-r) ]]; then
+          mapfile -t COMPREPLY < <(compgen -W "${logfiles[*]}" -- "$cur")
+        else
+          mapfile -t COMPREPLY < <(compgen -W "${logfiles[*]} -r" -- "$cur")
+        fi
+      fi
+      ;;
+
+    monitor | pid) mapfile -t COMPREPLY < <(compgen -W "$(_polybar_helper_bars)" -- "$cur") ;;
+
+    list-monitor-bars)
+      monitors="$(_polybar_helper_monitors)"
+      mapfile -t COMPREPLY < <(compgen -W "$monitors" -- "$cur")
+
+      if [ ${#COMPREPLY[@]} -eq 0 ]; then
+        mapfile -t COMPREPLY < <(compgen -W "$monitors" -- "${cur^^}")
+      fi
+      ;;
+
+    toggle | show | hide)
+      local -a entries=()
+
+      if [ "${cur:0:1}" = '-' ]; then
+        entries+=(-m -p)
+      elif [ "${COMP_WORDS[COMP_CWORD - 1]}" = '-p' ]; then
+        entries+=("$(_polybar_helper_bars)")
+      elif [ "${COMP_WORDS[COMP_CWORD - 1]}" = '-m' ]; then
+        entries+=("$(_polybar_helper_monitors)")
+      elif [ ${#COMP_WORDS[@]} -lt 4 ]; then
+        entries+=("$(_polybar_helper_monitors)")
+      fi
+
+      mapfile -t COMPREPLY < <(compgen -W "${entries[*]}" -- "$cur")
+
+      if [ ${#COMPREPLY[@]} -eq 0 ]; then
+        mapfile -t COMPREPLY < <(compgen -W "${entries[*]}" -- "${cur^^}")
+      fi
+      ;;
+
+    polybar-helper | phelper) mapfile -t COMPREPLY < <(compgen -W "$commands" -- "$cur") ;;
+  esac
+}
+
+complete -o filenames -o noquote -F _polybar_helper polybar-helper phelper plogs

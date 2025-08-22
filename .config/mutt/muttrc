@@ -1,0 +1,105 @@
+#------------------------------------------------------------
+# Mutt configuration
+#------------------------------------------------------------
+
+set realname = "Michael Carlberg"
+set pgp_default_key = "c@rlberg.se"
+
+source mappings.rc
+
+source colors/dracula.rc
+color status      magenta   color19
+color message     black     white
+color error       black     red
+color indicator   brightmagenta default
+
+set new_mail_command = "notify-send 'Mail synced' '%n new message(s), %u unread.' &"
+
+# -----------------------------------------------------------------
+# Macros
+# -----------------------------------------------------------------
+#macro index gd "<change-folder>$postponed<enter>" "go to drafts"
+#macro index gs "<change-folder>$record<enter>" "go to sent"
+#macro index gi "<change-folder>$spoolfile<Enter>" "go to inbox"
+#macro index gt "<change-folder>$trash<enter>" "go to trash"
+#macro index,pager A "<save-message> =Archive<enter> "archive message"
+#macro index 1 "<change-folder> = ~/.mutt/inbox<enter>"
+
+bind pager <down> next-line
+bind pager <up> previous-line
+
+unset markers
+
+set delete = no
+set move = no
+set help = no
+#set sort = reverse-last-date-received
+set sort = reverse-threads
+set sort_aux = reverse-date
+set use_threads = yes
+
+set date_format = "%m%d"
+set status_format = " %f "
+#set index_format = "%Z %D %-15.15n %s"
+#set status_format=" %f [Msgs:%?M?%M/?%m%?n? New:%n?%?o? Old:%o?%?d? Del:%d?%?F? Flag:%F?%?t? Tag:%t?%?p? Post:%p?%?b? Inc:%b?%?l? %l?]---(%s/%S)-%>-(%P)---"
+#set index_format="%4C %Z │ %{%b %d} │ %?l?%4l&%4c? │ %-25.25L │ %s"
+set index_format="%4C %Z │ %{%b %d} │ %?l?%4l&%4c? │ %25.25L │ %s"
+
+set sleep_time = 0
+set alias_file = ~/.mutt/aliases
+
+source "gpg -dq ~/.mutt/protonmail.gpg |" # import smtp and imap credentials
+
+# -----------------------------------------------------------------
+# Pager
+# -----------------------------------------------------------------
+ignore *unignore From Message-ID Date To Cc Bcc Subject
+set pager_stop
+alternative_order multipart/mixed multipart/related text/plain
+mime_lookup applications/octet-stream
+
+set mailcap_path="~/.mutt/mailcap:/usr/local/share/mailcap"
+auto_view text/html
+alternative_order text/plain text/enriched text/html
+
+# -----------------------------------------------------------------
+# Other
+# -----------------------------------------------------------------
+set indent_string = ">"
+set reflow_wrap = 80
+set reflow_text
+unset reflow_space_quotes
+unset imap_passive
+set imap_check_subscribed
+set mail_check = 30
+set timeout = 15
+set mime_type_query_command = "xdg-mime query filetype"
+
+# -----------------------------------------------------------------
+# Sidebar
+# -----------------------------------------------------------------
+set sidebar_visible = no
+set sidebar_width = 25
+#set sidebar_on_right = yes
+set sidebar_short_path = no
+set sidebar_component_depth = 0
+set sidebar_delim_chars = '/.'
+set sidebar_folder_indent = no
+set sidebar_indent_string = '  '
+set sidebar_new_mail_only = no
+#set sidebar_non_empty_mailbox_only = yes
+set sidebar_next_new_wrap = yes
+set sidebar_format = '%B%?F? [%F]?%* %?N?%N/?%S'
+set mail_check_stats
+
+#sidebar_pin '/home/jaagr/.mailboxes/proton'
+
+# Sort the mailboxes in the Sidebar using this method:
+#   count    – total number of messages
+#   flagged  – number of flagged messages
+#   unread   – number of unread messages
+#   path     – mailbox path
+#   unsorted – do not sort the mailboxes
+set sidebar_sort_method = 'path'
+
+# vim:ft=muttrc

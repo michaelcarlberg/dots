@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+if pgrep -x polybar >/dev/null; then
+  notify-send -u low "$(mpc --format "Now playing: %artist% - %title%" | head -1)"
+else
+  notify-send -u low -a ncmpcpp -c audio "$(mpc --format "<b>Now playing:</b>\n%artist% - %title%" | head -2)"
+fi

@@ -1,0 +1,164 @@
+#!/usr/bin/env bash
+
+set -e
+
+declare PIDFILE="$XDG_RUNTIME_DIR/bspwm-eventhandler.pid"
+declare -a NODES=()
+
+contains()
+{
+  local value
+  local lookup="$1"
+  shift
+  for value in "$@"; do
+    [ "$value" = "$lookup" ] && return 0
+  done
+  return 1
+}
+
+filter_nodes()
+{
+  for node in "$@"; do
+    if bspc query -N "$node" >/dev/null; then
+      echo "$node"
+    fi
+  done
+}
+
+is_new()
+{
+  if contains "$1" "${NODES[@]}"; then
+    return 1
+  fi
+}
+
+handler()
+{
+  # if [ -f "$XDG_CACHE_HOME/emacs/paused-state" ]; then
+  #   rm "$XDG_CACHE_HOME/emacs/paused-state"
+  #   pkill -USR1 -x sxhkd || :
+  #   ("$XDG_CONFIG_HOME/polybar/scripts/sxhkd.sh" init &>/dev/null || :) &
+  # elif pgrep -x emacs >/dev/null && sv -x c sxhkd &>/dev/null; then
+  #   echo "Restarting sxhkd..." >&2
+  #   sv -x restart sxhkd >/dev/null
+  # fi
+
+  echo "Subscribing to wm events"
+
+  while read -r event; do
+    case "$event" in
+      *) ;;
+    esac
+
+    if ! read -r node < <(bspc query -N -n); then
+      continue
+    fi
+
+    read -r wm_class < <(xprop -id "$node" -notype WM_CLASS | sed -r 's/WM_CLASS = "([^"]+)", "([^"]+)"/\2:\1/')
+
+    case "$wm_class" in
+      "Emacs:emacs")
+        # if is_new "$node"; then
+        #   bspc node -t fullscreen || :
+        # fi
+        ;;
+
+        # *emacs*)
+        #   read -r wm_state < <(xprop -id "$node" -notype _NET_WM_STATE)
+        #   notify-send "$wm_state"
+        #   case "${wm_state##* }" in
+        #     _NET_WM_STATE_FULLSCREEN)
+        #       echo 'match: emacs fullscreen'
+        #       if [ ! -f "$XDG_CACHE_HOME/emacs/paused-state" ]; then
+        #         touch "$XDG_CACHE_HOME/emacs/paused-state"
+        #         pkill -USR2 -x sxhkd || :
+        #         ("$XDG_CONFIG_HOME/polybar/scripts/sxhkd.sh" off &>/dev/null || :) &
+        #       fi
+        #       continue
+        #       ;;
+        #
+        #       # *) echo "${wm_class,,} =|= $wm_state" ;;
+        #   esac
+        #   ;;
+    esac
+
+    mapfile -t NODES < <(filter_nodes "$node" "${NODES[@]}")
+
+    if [ -f "$XDG_CACHE_HOME/emacs/paused-state" ]; then
+      rm -f "$XDG_CACHE_HOME/emacs/paused-state"
+      pkill -USR2 -x sxhkd || :
+      ("$XDG_CONFIG_HOME/polybar/scripts/sxhkd.sh" on &>/dev/null || :) &
+    fi
+
+    if pgrep -x picom >/dev/null; then
+      read -r window < <(bspc query -N -n)
+      read -r monitor < <(echo "$_line" | sed -nr 's/.*[W:]M([^:]+):.+/\1/p')
+      read -r status < <(sed -nr "s/(W|.+:)[mM](${monitor}.+)(:[mM]|\$).*/\2/p" <<<"$_line")
+
+      if grep -q ':T[FP=]:' <<<"$status"; then
+        xdotool windowstate --add ABOVE "$window" 2>/dev/null
+        xprop -id "$window" -format _COMPTON_SHADOW 32c -set _COMPTON_SHADOW 1 2>/dev/null
+      else
+        xdotool windowstate --remove ABOVE "$window" 2>/dev/null
+        xprop -id "$window" -format _COMPTON_SHADOW 32c -set _COMPTON_SHADOW 0 2>/dev/null
+      fi
+    fi
+  done < <(bspc subscribe)
+}
+
+main()
+{
+  case "$1" in
+    start)
+      if [ -e "$PIDFILE" ] && pgrep -F "$PIDFILE" >/dev/null; then
+        echo "error: already running" >&2
+        exit 1
+      fi
+
+      handler &
+      echo $! >"$PIDFILE"
+      ;;
+
+    stop)
+      case "$2" in
+        -f | --force)
+          rm -v "$PIDFILE"
+          pkill -e -f bash.+bspwm/eventhandler
+          ;;
+
+        *)
+          if [ -e "$PIDFILE" ] && pgrep -F "$PIDFILE"; then
+            pkill -e -F "$PIDFILE"
+          else
+            pgrep -f 'bash.+bspwm/eventhandler' | while read -r pid; do
+              case "$pid" in
+                "$$" | "$PPID") ;;
+                *) kill -9 "$pid" ;;
+              esac
+            done
+          fi
+          rm -v "$PIDFILE"
+          ;;
+      esac
+
+      ;;
+
+    restart)
+      echo "Restarting eventhandler..." >&2
+      "$0" stop || :
+      "$0" start
+      ;;
+
+    kill)
+      rm -v "$PIDFILE"
+      pkill -e -f bash.+bspwm/eventhandler
+      ;;
+
+    *)
+      echo "Usage: ${0##*/} start|stop [-f]|restart|kill" >&2
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"

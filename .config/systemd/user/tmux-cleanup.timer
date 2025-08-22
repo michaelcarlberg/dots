@@ -1,0 +1,10 @@
+[Unit]
+Description=Periodic termination of stale tmux sessions
+
+[Timer]
+OnCalendar=*-*-* *:00:00
+Persistent=true
+Unit=tmux-cleanup.service
+
+[Install]
+WantedBy=timers.target

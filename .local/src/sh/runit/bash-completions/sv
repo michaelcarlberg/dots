@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+
+_sv()
+{
+  local cur
+  local prev
+  local etcsvdir
+  local svdir
+
+  _init_completion || return
+
+  if alias "$1" &>/dev/null; then
+    mapfile -t COMP_WORDS < <(alias "$1" 2>/dev/null | sed -nr "s/alias[^=]+='(.+)'/\1/p" | tr ' ' '\n')
+    COMP_CWORD="${#COMP_WORDS[@]}"
+    prev="${COMP_WORDS[-1]}"
+  fi
+
+  case "$cur" in
+    re-enable) ;;
+
+    -l)
+      COMPREPLY=(-u)
+      return
+      ;;
+
+    -*)
+      mapfile -t COMPREPLY < <(compgen -W "-x -u -h -q" -- "$cur")
+      return
+      ;;
+  esac
+  local commands='enable
+                  disable
+                  re-enable
+                  ls list
+                  up down
+                  check
+                  status
+                  log
+                  once
+                  pause
+                  cont
+                  hup
+                  alarm
+                  interrupt
+                  1
+                  2
+                  term
+                  kill
+                  exit
+                  start
+                  stop
+                  restart
+                  shutdown
+                  force-stop
+                  force-reload
+                  force-restart
+                  force-shutdown'
+
+  if [[ ${COMP_WORDS[*]} =~ (-x|-ux) ]]; then
+    etcsvdir="$HOME/.runit/sv"
+    svdir="$HOME/.runit/runsvdir.x11"
+  elif [[ "${COMP_WORDS[*]}" =~ (-u|-xu) ]]; then
+    etcsvdir="$HOME/.runit/sv"
+    svdir="$HOME/.runit/runsvdir"
+  else
+    etcsvdir=/etc/sv
+    svdir=/var/service
+  fi
+
+  if [ "${prev:0:1}" = '-' ]; then
+    prev="${COMP_WORDS[COMP_CWORD - 2]}"
+  fi
+
+  case "$prev" in
+    -* | sv*)
+      mapfile -t COMPREPLY < <(compgen -W "${commands[@]}" -- "$cur")
+      ;;
+
+    enable)
+      for word in "$etcsvdir"/*; do
+        word="${word##*/}"
+        if [ ! -e "${svdir}/${word}" ]; then
+          COMPREPLY+=("$word")
+        fi
+      done
+      ;;
+
+    *) mapfile -t COMPREPLY < <(ls "$svdir") ;;
+  esac
+
+  # shfmt:ignore
+  # shellcheck disable=2016
+  COMPREPLY=($(compgen -W '${COMPREPLY[@]}' -- "$cur"))
+}
+
+complete -o default -F _sv sv

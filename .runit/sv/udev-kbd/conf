@@ -1,0 +1,10 @@
+#!/bin/sh
+# shellcheck disable=2034
+
+CONFIG_FILE="$HOME/.config/xorg/xkbmap.config"
+
+DEFAULT_LAYOUT=us
+
+LOGGING_ENABLE='true'
+
+LOG_DIR="$HOME/.local/var/log/udev-kbd"

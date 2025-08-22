@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Emacs
+GenericName=Emacs editor
+MimeType=application/x-shellscript;application/pdf;application/rss+xml;text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;text/x-c;text/x-c++;text/x-markdown;text/org;text/rfc822-headers;message/rfc822;message/x-gnu-rmail;text/x-generic;
+Exec=/home/jaagr/.local/bin/emacs %F
+Icon=/home/jaagr/.local/share/icons/hicolor/scalable/apps/emacs.svg
+Type=Application
+Terminal=false
+Categories=Development;TextEditor;
+StartupNotify=true
+StartupWMClass=Emacs

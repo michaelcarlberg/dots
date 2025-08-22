@@ -1,0 +1,14 @@
+#!/bin/sh
+# shellcheck disable=1091
+
+exec 2>&1
+
+# sv -x check bspwm >/dev/null || exit 1
+
+[ -r ./conf ] && . ./conf
+
+cd ~ || exit 1
+
+# shfmt:ignore
+# shellcheck disable=2086
+exec xbanish $OPTS

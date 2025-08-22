@@ -1,0 +1,8 @@
+#!/bin/sh
+# shellcheck disable=2034
+
+OPTS='--no-browser --no-restart --logflags=0'
+
+LOGGING_ENABLE='true'
+
+LOG_DIR="$HOME/.local/var/log/syncthing"

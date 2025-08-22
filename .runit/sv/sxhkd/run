@@ -1,0 +1,19 @@
+#!/bin/sh
+# shellcheck disable=1091
+
+set -e
+
+exec 2>&1
+
+sv -x c bspwm
+
+[ -r ./conf ] && . ./conf
+
+cd ~
+
+# shfmt:ignore
+(while ! bspc wm -g >/dev/null 2>&1; do sleep 1; done; "$XDG_CONFIG_HOME"/sxhkd/eventhandler start) &
+
+# shellcheck disable=2086
+# shfmt:ignore
+exec sxhkd $OPTS

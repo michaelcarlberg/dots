@@ -1,0 +1,353 @@
+#
+# Ncmpcpp configuration
+#
+
+ncmpcpp_directory = "/home/jaagr/.config/ncmpcpp"
+
+# MPD connection settings {{{
+
+mpd_host = "localhost"
+mpd_port = "6600"
+mpd_music_dir = "/home/jaagr/media/music"
+mpd_connection_timeout = 5
+mpd_crossfade_time = 3
+
+# }}}
+# Music visualizer {{{
+
+visualizer_data_source = "/tmp/mpd_visualizer.fifo"
+visualizer_output_name = "Visualizer FIFO"
+#visualizer_sync_interval = "30"
+visualizer_in_stereo = "yes"
+
+# Available values: spectrum, wave, wave_filled, ellipse
+visualizer_type = "wave"
+
+# visualizer_color = "red"
+visualizer_color = "128, 127, 126, 125, 124, 102, 101"
+
+# visualizer_look = "●·"
+# visualizer_look = "+|"
+#visualizer_look = "▉▋"
+#visualizer_look = "▋▋"
+#visualizer_look = "◆▋"
+#visualizer_look = "◈░"
+#visualizer_look = "││"
+#visualizer_look = "▀▋"
+#visualizer_look = "▀○"
+visualizer_look = "█▋"
+#visualizer_look = "██"
+
+# }}}
+# Delays {{{
+
+playlist_disable_highlight_delay = 5
+message_delay_time = 1
+
+# }}}
+# Song format {{{
+
+# Available placeholders for song formats:
+# %l - length
+# %f - filename
+# %D - directory
+# %a - artist
+# %A - album artist
+# %t - title
+# %b - album
+# %y - date
+# %n - track number (01/12 -> 01)
+# %N - full track info (01/12 -> 01/12)
+# %g - genre
+# %c - composer
+# %p - performer
+# %d - disc
+# %C - comment
+# %P - priority
+# $R - begin right alignment
+#
+# You can also put them in { } and then it will be displayed
+# only if all requested values are available and/or define alternate
+# value with { }|{ } eg. {%a - %t}|{%f}
+#
+# Note: Format that is similar to "%a - %t" (i.e. without any additional
+# braces) is equal to "{%a - %t}", so if one of the tags is missing,
+# you'll get nothing.
+#
+# Text can also have different color than the main window has,
+# eg. if you want length to be green, write $3%l$9
+#
+# Available values:
+# - 0 - default window color (discards all other colors)
+# - 1 - black
+# - 2 - red
+# - 3 - green
+# - 4 - yellow
+# - 5 - blue
+# - 6 - magenta
+# - 7 - cyan
+# - 8 - white
+# - 9 - end of current color
+# - b - bold text
+# - u - underline text
+# - r - reverse colors
+# - a - use alternative character set
+#
+# If you don't want to use a non-color attribute anymore, just put it
+# again, but this time insert character '/' between '$' and attribute
+# character, e.g. {$b%t$/b}|{$r%f$/r} will display bolded title tag
+# or filename with reversed colors.
+#
+# If you want to use 256 colors and/or background colors in formats
+# (the naming scheme is described below in section about color
+# definitions), it can be done with the syntax $(COLOR), e.g. to set
+# the artist tag to one of the non-standard colors and make it have
+# yellow background, you need to write $(197_yellow)%a$(end). Note
+# that for standard colors this is interchangable with attributes
+# listed above.
+#
+# Note: colors can be nested.
+#
+
+# song_list_format = "{$5 %a$9 $1│$9 $8%t$9 }|{ $8%f$9}$R{$5%b $7}"
+#song_list_format = "{$1 %l$9 $1│$9 $2%a$9 $1│$9 $6%b$9 }$R{$5%t$9}|{$5%f$9} $1│$9 $1%n $9"
+#song_list_format = "{$2%n▕ $9}{$7%a - $9}{$6%t$9}|{$8%f$9}$R{$4▕ %b$9}{$3▕ %l$9}"
+#song_list_format = "$8[$9$8%b$8]$9 $8|$9 $8%a$9 $8|$9 $8%t$9 $R [%l]"
+#song_list_format = "{$8$9}{[%l] >> }{%t }$R{%a - %b}"
+
+#song_status_format = "{{{$1%a$9}} $1◦$9 {$1%t$9}|{$1%f$9}{ $1◦$9 $1%b$9{ $1◦$9 $1%y$9}}}"
+# song_status_format = "{{{$9%a}} $8𑗄 $9 {$8%t$9}|{$8%f$9}{ $8𑗄 $9 $6%b$9{ $8𑗄 $9 $7%y$9}}}"
+# song_library_format = "{%n $8◦$9 }{%t}|{%f}"
+
+alternative_header_first_line_format = "{{$(red)}{%t}|{%f}{$0}}"
+alternative_header_second_line_format = "{{$8%a$0}{ $2 ∙ $9 $3%b$9 $8 ∙ $9 %y$9}}|{%D}"
+
+# now_playing_prefix = "$b"
+# now_playing_suffix = "$/b"
+now_playing_prefix = $(red_232)$b
+now_playing_suffix = $/b$(end)
+
+browser_playlist_prefix = $2playlist$9
+
+selected_item_prefix = $(34)
+selected_item_suffix = $(end)
+
+current_item_prefix = $(white_20)
+current_item_suffix = $(end)
+
+current_item_inactive_column_prefix = $(130)$r
+current_item_inactive_column_suffix = $/r$(end)
+
+modified_item_prefix = "$3> $9"
+
+# colors are not supported for this variable
+song_window_title_format = "{%t}|{%f} - {%a}"
+
+# Available values: name, mtime, format, noop
+browser_sort_mode = "name"
+browser_sort_format = "{%a - }{%t}|{%f} {(%l)}"
+
+# }}}
+# Columns settings {{{
+
+# Syntax of song columns list format is "column column etc."
+#
+# - syntax for each column is:
+#
+# (width of column)[column's color]{displayed tag}
+#
+# Note: Width is by default in %, if you want a column to
+# have fixed size, add 'f' after the value, e.g. (10)[white]{a}
+# will be the column that take 10% of screen (so the real column's
+# width will depend on actual screen size), whereas (10f)[white]{a}
+# will take 10 terminal cells, no matter how wide the screen is.
+#
+# - color is optional (if you want the default one, type [])
+#
+# Note: You can give a column additional attributes by putting appropriate
+# character after displayed tag character. Available attributes are:
+#
+# - r - column will be right aligned
+# - E - if tag is empty, empty tag marker won't be displayed
+#
+# You can also:
+#
+# - give a column custom name by putting it after attributes,
+#   separated with character ':', e.g. {lr:Length} gives you
+#   right aligned column of lengths named "Length".
+#
+# - define sequence of tags, that have to be displayed in case
+#   predecessor is empty in a way similar to the one in classic
+#   song format, i.e. using '|' character, e.g. {a|c|p:Owner}
+#   creates column named "Owner" that tries to display artist
+#   tag and then composer and performter if previous ones are
+#   not available.
+#
+#song_columns_list_format = "(1f)[red]{} (30)[red]{t|f} (25)[yellow]{a} (25)[green]{b} (10)[blue]{y} (4f)[white]{l} (1f)[white]{}"
+#song_columns_list_format = "(40)[cyan]{t|f} (25)[white]{a} (25)[cyan]{b} (10)[white]{y} (4f)[cyan]{l}"
+#song_columns_list_format = "(40)[red]{a} (40)[blue]{t} (20)[magenta]{b}"
+#song_columns_list_format = "$L(9)[white]{l} (20)[red]{t} (30)$R(20)[green]{a}[cyan]{b}"
+
+
+# }}}
+# Various settings {{{
+
+#execute_on_song_change = "$HOME/.ncmpcpp/broadcast"
+
+#playlist_show_mpd_host = "no"
+playlist_show_remaining_time = "no"
+playlist_shorten_total_times = "no"
+playlist_separate_albums = "no"
+space_add_mode = "always_add"
+
+# Possible display modes: classic, columns.
+browser_display_mode = "columns"
+playlist_display_mode = "columns"
+search_engine_display_mode = "columns"
+playlist_editor_display_mode = "classic"
+
+header_text_scrolling = "yes"
+header_visibility = "yes"
+titles_visibility = "yes"
+enable_window_title = "yes"
+statusbar_visibility = "no"
+
+autocenter_mode = "yes"
+centered_cursor = "no"
+
+seek_time = 1
+incremental_seeking = "yes"
+volume_change_step = 2
+
+default_find_mode = "wrapped" # wrapped | normal
+default_place_to_search_in = "database" # database | playlist
+default_tag_editor_pattern = " %n - %t "
+
+lines_scrolled = 1
+cyclic_scrolling = "no"
+discard_colors_if_item_is_selected = "yes"
+show_hidden_files_in_local_browser = "no"
+media_library_primary_tag = "artist"
+user_interface = "alternative" # classic | alternative
+
+# How shall key_screen_switcher work?
+#
+# - "previous" - switch between the current and previous screen.
+# - "screen1,...,screenN" - switch between given sequence of screens.
+#
+# Available values: help, playlist, browser, search_engine,
+# media_library, playlist_editor, tag_editor, outputs, visualizer, clock
+screen_switcher_mode = "playlist,media_library,visualizer,clock"
+
+startup_screen = "playlist"
+
+# Note: use "" for no slave screen.
+#startup_slave_screen = ""
+#startup_slave_screen_focus = "no"
+
+#locked_screen_width_part = "50"
+#ask_for_locked_screen_width_part = "yes"
+jump_to_now_playing_song_at_start = "yes"
+ask_before_clearing_playlists = "yes"
+clock_display_seconds = "yes"
+display_volume_level = "yes"
+display_bitrate = "no"
+display_remaining_time = "no"
+ignore_leading_the = "no"
+
+regular_expressions = "extended" # none | basic | extended | perl
+
+block_search_constraints_change_if_items_found = "yes"
+mouse_list_scroll_whole_page = "yes"
+mouse_support = "yes"
+
+empty_tag_marker =  (empty)
+tags_separator = " | "
+tag_editor_extended_numeration = "no"
+allow_for_physical_item_deletion = "no"
+
+# 1: use mpd built-in searching (no regexes, pattern matching)
+# 2: use ncmpcpp searching (pattern matching with support for regexes,
+#    but if your mpd is on a remote machine, downloading big database
+#    to process it can take a while
+# 3: match only exact values (this mode uses mpd function for searching
+#    in database and local one for searching in current playlist)
+search_engine_default_search_mode = 2
+
+# }}}
+# Progressbar {{{
+
+#progressbar_look = "▃▃▃"
+progressbar_look = "─┨─"
+#progressbar_look = "▀▀▀"
+#progressbar_look = "▉▉▉"
+#progressbar_look = "─⊙ "
+
+progressbar_color = "129"
+progressbar_elapsed_color = "198"
+
+# }}}
+# Lyrics support {{{
+
+lyrics_directory = "~/.lyrics"
+store_lyrics_in_song_dir = "yes"
+generate_win32_compatible_filenames = "yes"
+fetch_lyrics_for_current_song_in_background = "no"
+external_editor = "emacsclient"
+use_console_editor = "yes"
+follow_now_playing_lyrics = "yes"
+lastfm_preferred_language = "en"
+
+# }}}
+# Colors definitions {{{
+
+colors_enabled = "yes"
+
+color1 = 3
+color2 = 4
+
+volume_color = "red"
+state_flags_color = "240"
+state_line_color = "2"
+
+statusbar_color = "104"
+empty_tag_color = "245"
+
+alternative_ui_separator_color = "129"
+
+header_window_color = "240"
+window_border_color = "240"
+
+# active_column_color = "138"
+active_window_border = "red"
+
+main_window_color = "8"
+# main_window_color = "125"
+# main_window_highlight_color = "blue"
+
+# }}}
+
+#=================================================================================
+# Overrides
+#=================================================================================
+
+#state_line_color = default
+#
+#state_flags_color = default:b
+#
+#main_window_color = yellow
+#
+#color1 = white
+#
+#color2 = green
+#
+#progressbar_color = black:b
+
+# browser_sort_format = "{%a} {%y} {%b} {%n}|{%t}}|{%f}"
+# song_columns_list_format = "(25)[231]{ar:} (0)[231]{: } (5)[236]{lr}   (1)[231]{: }(10)[231]{t|f:Title} ()[232]{b}"
+# song_columns_list_format = "(1f)[1]{: }(6f)[125]{lr} (1f)[232]{: }(30)[232]{t} (1f)[238]{: }(30)[238]{a} (1f)[232]{: }(53)[232]{b}"
+# song_columns_list_format = "(1f)[125]{: }(1f)[1]{: } (9f)[227]{: }(40)[227]{ar} (1f)[125]{: }(5f)[125]{lr}(1f)[227]{: } (45)[227]{t|f:Title} (1f)[1]{: }(1f)[125]{: }"
+song_columns_list_format = "(9f)[red]{lr:Time}(2)[red]{: } (25)[white]{a} (1)[white]{}(46)[white]{t}"
+song_list_format = "[%n] {%a - %t}|{%f} {$R %b}"
+song_status_format = "$b$7 ♫  $2%a $4 ∙ $3 ∙ $9%t $4 ∙ $3 ∙ $5%b "
+song_library_format = "{%n $4∙$5 $8}{%t}|{%f}"

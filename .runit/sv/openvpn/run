@@ -1,0 +1,10 @@
+#!/bin/sh
+# shellcheck disable=1091
+
+exec 2>&1
+
+[ -r conf ] && . ./conf
+
+# shellcheck disable=2086
+# shfmt:ignore
+exec sudo openvpn $OPTS

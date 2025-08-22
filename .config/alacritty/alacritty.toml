@@ -1,0 +1,201 @@
+
+[env]
+TERM = "alacritty"
+USE_TERMCOLORS = "0"
+
+[terminal.shell]
+program = "/bin/bash"
+args = [ "-l" ]
+
+[window]
+title = "Terminal"
+opacity = 0.975
+
+[window.padding]
+x = 2
+y = 2
+
+[font]
+size = 9
+
+[font.normal]
+family = "ProFont For Powerline"
+
+# [font.bold]
+# family = "ProFont NF"
+
+# [font.italic]
+# family = "ProFont NF"
+
+# [font.bold_italic]
+# family = "ProFont NF"
+
+[keyboard]
+bindings = [
+  { key = ";", mods = "Control", chars = ';' },
+]
+
+[general]
+import = [ "~/.config/alacritty/colors.toml" ]
+
+[terminal]
+
+#   { key = "A", mods = "Super", chars = '^[a' },
+#   { key = "B", mods = "Super", chars = '^[b' },
+#   { key = "C", mods = "Super", chars = '^[c' },
+#   { key = "D", mods = "Super", chars = '^[d' },
+#   { key = "E", mods = "Super", chars = '^[e' },
+#   { key = "F", mods = "Super", chars = '^[f' },
+#   { key = "G", mods = "Super", chars = '^[g' },
+#   { key = "H", mods = "Super", chars = '^[h' },
+#   { key = "I", mods = "Super", chars = '^[i' },
+#   { key = "J", mods = "Super", chars = '^[j' },
+#   { key = "K", mods = "Super", chars = '^[k' },
+#   { key = "L", mods = "Super", chars = '^[l' },
+#   { key = "M", mods = "Super", chars = '^[m' },
+#   { key = "N", mods = "Super", chars = '^[n' },
+#   { key = "O", mods = "Super", chars = '^[o' },
+#   { key = "P", mods = "Super", chars = '^[p' },
+#   { key = "Q", mods = "Super", chars = '^[q' },
+#   { key = "R", mods = "Super", chars = '^[r' },
+#   { key = "S", mods = "Super", chars = '^[s' },
+#   { key = "T", mods = "Super", chars = '^[t' },
+#   { key = "U", mods = "Super", chars = '^[u' },
+#   { key = "V", mods = "Super", chars = '^[v' },
+#   { key = "W", mods = "Super", chars = '^[w' },
+#   { key = "X", mods = "Super", chars = '^[x' },
+#   { key = "Y", mods = "Super", chars = '^[y' },
+#   { key = "Z", mods = "Super", chars = '^[z' },
+#   { key = "A", mods = "Super|Shift", chars = '^[A' },
+#   { key = "B", mods = "Super|Shift", chars = '^[B' },
+#   { key = "C", mods = "Super|Shift", chars = '^[C' },
+#   { key = "D", mods = "Super|Shift", chars = '^[D' },
+#   { key = "E", mods = "Super|Shift", chars = '^[E' },
+#   { key = "F", mods = "Super|Shift", chars = '^[F' },
+#   { key = "G", mods = "Super|Shift", chars = '^[G' },
+#   { key = "H", mods = "Super|Shift", chars = '^[H' },
+#   { key = "I", mods = "Super|Shift", chars = '^[I' },
+#   { key = "J", mods = "Super|Shift", chars = '^[J' },
+#   { key = "K", mods = "Super|Shift", chars = '^[K' },
+#   { key = "L", mods = "Super|Shift", chars = '^[L' },
+#   { key = "M", mods = "Super|Shift", chars = '^[M' },
+#   { key = "N", mods = "Super|Shift", chars = '^[N' },
+#   { key = "O", mods = "Super|Shift", chars = '^[O' },
+#   { key = "P", mods = "Super|Shift", chars = '^[P' },
+#   { key = "Q", mods = "Super|Shift", chars = '^[Q' },
+#   { key = "R", mods = "Super|Shift", chars = '^[R' },
+#   { key = "S", mods = "Super|Shift", chars = '^[S' },
+#   { key = "T", mods = "Super|Shift", chars = '^[T' },
+#   { key = "U", mods = "Super|Shift", chars = '^[U' },
+#   { key = "V", mods = "Super|Shift", chars = '^[V' },
+#   { key = "W", mods = "Super|Shift", chars = '^[W' },
+#   { key = "X", mods = "Super|Shift", chars = '^[X' },
+#   { key = "Y", mods = "Super|Shift", chars = '^[Y' },
+#   { key = "Z", mods = "Super|Shift", chars = '^[Z' },
+#   { key = "Key1", mods = "Super", chars = '^[1' },
+#   { key = "Key2", mods = "Super", chars = '^[2' },
+#   { key = "Key3", mods = "Super", chars = '^[3' },
+#   { key = "Key4", mods = "Super", chars = '^[4' },
+#   { key = "Key5", mods = "Super", chars = '^[5' },
+#   { key = "Key6", mods = "Super", chars = '^[6' },
+#   { key = "Key7", mods = "Super", chars = '^[7' },
+#   { key = "Key8", mods = "Super", chars = '^[8' },
+#   { key = "Key9", mods = "Super", chars = '^[9' },
+#   { key = "Key0", mods = "Super", chars = '^[0' },
+#   { key = "Space", mods = "Control", chars = '^@' },
+#   { key = "`", mods = "Super", chars = '^[`' },
+#   { key = "`", mods = "Super|Shift", chars = '^[~' },
+#   { key = "Period", mods = "Super", chars = '^[.' },
+#   { key = "Key8", mods = "Super|Shift", chars = '^[*' },
+#   { key = "Key3", mods = "Super|Shift", chars = '^[#' },
+#   { key = "Period", mods = "Super|Shift", chars = '^[>' },
+#   { key = "Comma", mods = "Super|Shift", chars = '^[<' },
+#   { key = "Minus", mods = "Super|Shift", chars = '^[_' },
+#   { key = "Key5", mods = "Super|Shift", chars = '^[%' },
+#   { key = "Key6", mods = "Super|Shift", chars = '^[^' },
+#   { key = "Backslash", mods = "Super", chars = '^[\\' },
+#   { key = "Backslash", mods = "Super|Shift", chars = '^[|' },
+#   { key = "Semicolon", mods = "Control", chars = ';' },
+#   # { key = 33, mods = "Control", chars = '[' }
+#   { key = 65, mods = "Alt", chars = '[' },
+#   { key = 37, mods = "Control", chars = '^[' }
+# ]
+
+#   { key = "Paste", action = "Paste" },
+#   { key = "A", mods = "Super", chars = '^[a' },
+#   { key = "B", mods = "Super", chars = '^[b' },
+#   { key = "C", mods = "Super", chars = '^[c' },
+#   { key = "D", mods = "Super", chars = '^[d' },
+#   { key = "E", mods = "Super", chars = '^[e' },
+#   { key = "F", mods = "Super", chars = '^[f' },
+#   { key = "G", mods = "Super", chars = '^[g' },
+#   { key = "H", mods = "Super", chars = '^[h' },
+#   { key = "I", mods = "Super", chars = '^[i' },
+#   { key = "J", mods = "Super", chars = '^[j' },
+#   { key = "K", mods = "Super", chars = '^[k' },
+#   { key = "L", mods = "Super", chars = '^[l' },
+#   { key = "M", mods = "Super", chars = '^[m' },
+#   { key = "N", mods = "Super", chars = '^[n' },
+#   { key = "O", mods = "Super", chars = '^[o' },
+#   { key = "P", mods = "Super", chars = '^[p' },
+#   { key = "Q", mods = "Super", chars = '^[q' },
+#   { key = "R", mods = "Super", chars = '^[r' },
+#   { key = "S", mods = "Super", chars = '^[s' },
+#   { key = "T", mods = "Super", chars = '^[t' },
+#   { key = "U", mods = "Super", chars = '^[u' },
+#   { key = "V", mods = "Super", chars = '^[v' },
+#   { key = "W", mods = "Super", chars = '^[w' },
+#   { key = "X", mods = "Super", chars = '^[x' },
+#   { key = "Y", mods = "Super", chars = '^[y' },
+#   { key = "Z", mods = "Super", chars = '^[z' },
+#   { key = "A", mods = "Super|Shift", chars = '^[A' },
+#   { key = "B", mods = "Super|Shift", chars = '^[B' },
+#   { key = "C", mods = "Super|Shift", chars = '^[C' },
+#   { key = "D", mods = "Super|Shift", chars = '^[D' },
+#   { key = "E", mods = "Super|Shift", chars = '^[E' },
+#   { key = "F", mods = "Super|Shift", chars = '^[F' },
+#   { key = "G", mods = "Super|Shift", chars = '^[G' },
+#   { key = "H", mods = "Super|Shift", chars = '^[H' },
+#   { key = "I", mods = "Super|Shift", chars = '^[I' },
+#   { key = "J", mods = "Super|Shift", chars = '^[J' },
+#   { key = "K", mods = "Super|Shift", chars = '^[K' },
+#   { key = "L", mods = "Super|Shift", chars = '^[L' },
+#   { key = "M", mods = "Super|Shift", chars = '^[M' },
+#   { key = "N", mods = "Super|Shift", chars = '^[N' },
+#   { key = "O", mods = "Super|Shift", chars = '^[O' },
+#   { key = "P", mods = "Super|Shift", chars = '^[P' },
+#   { key = "Q", mods = "Super|Shift", chars = '^[Q' },
+#   { key = "R", mods = "Super|Shift", chars = '^[R' },
+#   { key = "S", mods = "Super|Shift", chars = '^[S' },
+#   { key = "T", mods = "Super|Shift", chars = '^[T' },
+#   { key = "U", mods = "Super|Shift", chars = '^[U' },
+#   { key = "V", mods = "Super|Shift", chars = '^[V' },
+#   { key = "W", mods = "Super|Shift", chars = '^[W' },
+#   { key = "X", mods = "Super|Shift", chars = '^[X' },
+#   { key = "Y", mods = "Super|Shift", chars = '^[Y' },
+#   { key = "Z", mods = "Super|Shift", chars = '^[Z' },
+#   { key = "Key1", mods = "Super", chars = '^[1' },
+#   { key = "Key2", mods = "Super", chars = '^[2' },
+#   { key = "Key3", mods = "Super", chars = '^[3' },
+#   { key = "Key4", mods = "Super", chars = '^[4' },
+#   { key = "Key5", mods = "Super", chars = '^[5' },
+#   { key = "Key6", mods = "Super", chars = '^[6' },
+#   { key = "Key7", mods = "Super", chars = '^[7' },
+#   { key = "Key8", mods = "Super", chars = '^[8' },
+#   { key = "Key9", mods = "Super", chars = '^[9' },
+#   { key = "Key0", mods = "Super", chars = '^[0' },
+#   { key = "Space", mods = "Control", chars = '\x00' },
+#   { key = "Grave", mods = "Super", chars = '^[`' },
+#   { key = "Grave", mods = "Super|Shift", chars = '^[~' },
+#   { key = "Period", mods = "Super", chars = '^[.' },
+#   { key = "Key8", mods = "Super|Shift", chars = '^[*' },
+#   { key = "Key3", mods = "Super|Shift", chars = '^[#' },
+#   { key = "Period", mods = "Super|Shift", chars = '^[>' },
+#   { key = "Comma", mods = "Super|Shift", chars = '^[<' },
+#   { key = "Minus", mods = "Super|Shift", chars = '^[_' },
+#   { key = "Key5", mods = "Super|Shift", chars = '^[%' },
+#   { key = "Key6", mods = "Super|Shift", chars = '^[^' },
+#   { key = "Backslash", mods = "Super", chars = '^[\\' },
+#   { key = "Backslash", mods = "Super|Shift", chars = '^[|' },
+#   { key = "Semicolon", mods = "Control", chars = '^[;' }
+# ]

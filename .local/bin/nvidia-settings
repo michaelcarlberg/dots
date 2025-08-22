@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+config="$XDG_CONFIG_HOME/nvidia-settings-rc"
+declare -a args=()
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --config=*)
+      config="${1#--config=}"
+      ;;
+
+    --config)
+      config="$2"
+      shift
+      ;;
+
+    *) args+=("$1") ;;
+  esac
+  shift
+done
+
+/usr/bin/nvidia-settings --config "$config" "${args[@]}"

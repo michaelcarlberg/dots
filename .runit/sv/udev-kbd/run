@@ -1,0 +1,27 @@
+#!/bin/sh
+
+exec 2>&1
+
+test "$DISPLAY" || exit 0
+test -d /dev/input/by-layout || exit 0
+
+[ -r ./conf ] && . ./conf
+
+configure_kbd()
+{
+  if [ $# -eq 0 ] && [ -L /dev/input/by-layout ]; then
+    set -- "$(find /dev/input/by-layout -type l | cut -d/ -f5 | tail -1)"
+  fi
+
+  "$XDG_CONFIG_HOME/xorg/configure-keyboard.sh" "${1:-$DEFAULT_LAYOUT}"
+}
+
+sleep 2
+configure_kbd "$DEFAULT_LAYOUT"
+
+inotifywait -q -e create -e delete /dev/input/by-layout | while read -r event; do
+  case "$event" in
+    CREATE) configure_kbd "${event#?*CREATE }" ;;
+    DELETE) configure_kbd "$DEFAULT_LAYOUT" ;;
+  esac
+done

@@ -1,0 +1,44 @@
+#!/bin/bash
+
+set -e
+
+# shellcheck source=~/.config/tmux/scripts/window-cmd
+source "$XDG_CONFIG_HOME"/tmux/scripts/window-cmd
+
+window_id="$(bspc query -N -n)"
+test "$window_id"
+
+window_name="$(xwininfo -id "$window_id" | sed -nr 's/^xwininfo: .+"(.+)"$/\1/p')"
+test "$window_name"
+
+if ! echo "$window_name" | grep -qi terminal; then
+  exit 1
+elif [ "$(tmux display -p '#{window_panes}')" = '1' ]; then
+  exit 1
+fi
+
+direction="${1?direction}"
+
+case "$direction" in
+  -U) tmux display -p '#{pane_at_top}' | grep -q 0; p=pane_top cmp=">" ;;
+  -D) tmux display -p '#{pane_at_bottom}' | grep -q 0; p=pane_bottom cmp="<" ;;
+  -L) tmux display -p '#{pane_at_left}' | grep -q 0; p=pane_left cmp=">" ;;
+  -R) tmux display -p '#{pane_at_right}' | grep -q 0; p=pane_right cmp="<" ;;
+  *) exit 1 ;;
+esac
+
+# shellcheck disable=2009
+# if ps -t "$(tmux display -p '#{pane_tty}' | cut -b6-)" | grep -q vim; then
+#   exit 0
+# fi
+
+old=$(tmux display -p "#{$p}")
+tmux select-pane "$direction"
+new=$(tmux display -p "#{$p}")
+test "$new" != "$old"
+
+# shellcheck disable=1105,2086
+if (( $new $cmp $old )); then
+  tmux select-pane -l
+  exit 1
+fi

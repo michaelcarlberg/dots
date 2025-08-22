@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+INFILE="${1?input file}"
+PAGERANGE="${2?page range}"
+OUTFILE="${3?output file}"
+
+qpdf "$INFILE" --pages "$INFILE" "$PAGERANGE" -- "$OUTFILE"

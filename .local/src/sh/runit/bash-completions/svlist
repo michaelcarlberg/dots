@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+_svlist()
+{
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+
+  case "$cur" in
+    -[xav])
+      COMPREPLY=("$cur")
+      return
+      ;;
+
+    *) COMPREPLY=() ;;
+  esac
+
+  [[ ${COMP_WORDS[*]} =~ (-x) ]] || COMPREPLY+=('-x')
+  [[ ${COMP_WORDS[*]} =~ (-a) ]] || COMPREPLY+=('-a')
+  [[ ${COMP_WORDS[*]} =~ (-v) ]] || COMPREPLY+=('-v')
+
+  # shellcheck disable=2016
+  # shfmt:ignore
+  mapfile -t COMPREPLY < <(compgen -W '${COMPREPLY[@]}' -- "$cur")
+}
+
+complete -F _svlist svlist

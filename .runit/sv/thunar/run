@@ -1,0 +1,15 @@
+#!/bin/sh
+
+set -e
+
+exec 2>&1
+
+sv -x c bspwm
+
+[ -r ./conf ] && . ./conf
+
+cd ~
+
+# shellcheck disable=2086
+# shfmt:ignore
+exec thunar --daemon $OPTS

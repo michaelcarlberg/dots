@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -e
+
+tmux()
+{
+  local session
+  local cmd="${1?command}"
+  shift
+
+  [ "$window_name" ] || {
+    window_id="$(bspc query -N -n)"
+    window_name="$(xwininfo -id "$window_id" | sed -nr 's/^xwininfo: .+"(.+)"$/\1/p')"
+  }
+
+  session="$(echo "$window_name" | sed -nr 's/.*tmux=(.+)/\1/p')"
+  test "$session"
+
+  unset tmux
+  tmux "$cmd" -t "$session" "$@"
+}
+
+# invoke the wrapper unless the script is sourced
+if ! (return 0 2>/dev/null); then
+  set -e
+  tmux "$@"
+fi

@@ -1,0 +1,37 @@
+#!/bin/bash
+
+_cloak_complete()
+{
+  local commands='add
+                  delete
+                  help
+                  list
+                  query
+                  view'
+
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  local prev="${COMP_WORDS[COMP_CWORD - 1]}"
+
+  local -a entries=()
+
+  case "${COMP_WORDS[1]}" in
+    list | query | help) ;;
+
+    delete | view)
+      if [ "$prev" = "${COMP_WORDS[1]}" ]; then
+        mapfile -t entries < <(otp list | sed -nr '/Account:/s/Account: (.+)/\1/p')
+        mapfile -t COMPREPLY < <(compgen -W "${entries[*]}" -- "$cur")
+      fi
+      ;;
+
+    add) mapfile -t COMPREPLY < <(compgen -W "1:account 2:key" -- "$cur") ;;
+
+    *) mapfile -t COMPREPLY < <(compgen -W "$commands" -- "$cur") ;;
+  esac
+
+  if type __ltrim_colon_completions &>/dev/null; then
+    __ltrim_colon_completions "${COMP_WORDS[COMP_CWORD]}"
+  fi
+}
+
+complete -o noquote -F _cloak_complete cloak otp

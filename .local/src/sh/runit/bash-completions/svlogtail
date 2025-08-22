@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+_svlogtail()
+{
+  local cur
+  local prev
+  local dir
+
+  _init_completion || return
+
+  case "$cur" in
+    -*)
+      COMPREPLY=('-u')
+      return
+      ;;
+  esac
+
+  if [[ ${COMP_WORDS[*]} =~ (-u) ]]; then
+    dir="$HOME/.local/var/log"
+  else
+    dir=/var/log/socklog
+  fi
+
+  if [ "$prev" = '-u' ]; then
+    prev="${COMP_WORDS[COMP_CWORD - 2]}"
+  fi
+
+  mapfile -t COMPREPLY < <(ls "$dir")
+
+  # shellcheck disable=2016
+  # shfmt:ignore
+  mapfile -t COMPREPLY < <(compgen -W '${COMPREPLY[@]}' -- "$cur")
+}
+
+complete -F _svlogtail svlogtail

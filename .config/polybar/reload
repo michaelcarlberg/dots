@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+if ! pgrep -x polybar; then
+  echo "not running..." >&2
+  exit 1
+fi
+
+wins="$(xdotool search --name polybar)"
+
+for f in "$XDG_RUNTIME_DIR"/polybar/"$1"*.pid; do
+  pkill -USR1 -e -F "$f"
+  pkill -9 e -P "$(<"$f")" || :
+done
+
+while wins2="$(xdotool search --name polybar)" && [ "$wins" != "$wins2" ]; do
+  sleep 1
+done
+
+"$XDG_CONFIG_HOME"/polybar/scripts/vol.sh toggle-module &>/dev/null || :
+"$XDG_CONFIG_HOME"/polybar/scripts/sxhkd.sh init &>/dev/null || :

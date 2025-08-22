@@ -1,0 +1,9 @@
+# will match my Varmilo keyboard
+SUBSYSTEM=="input", ATTRS{idVendor}=="05ac", ATTRS{idProduct}=="024f", GROUP="plugdev", MODE="0660", SYMLINK+="input/by-layout/us"
+
+# will match my integrated keyboard 
+Acer WMI hotkeys
+SUBSYSTEM=="input", ENV{ID_PATH}=="platform-i8042-serio-0", SYMLINK+="input/by-layout/se"
+
+# force the directory to be recreated, just in case you unplug all input
+SUBSYSTEM=="input", RUN="/bin/mkdir -p /dev/input/by-layout"

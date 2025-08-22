@@ -1,0 +1,10 @@
+#!/bin/sh
+# shellcheck disable=2034
+
+OPTS=''
+
+LOGGING_ENABLE='true'
+
+LOG_LEVEL=1 # https://docs.pipewire.org/page_daemon.html#sec_logging
+
+LOG_DIR="$HOME/.local/var/log/pipewire"

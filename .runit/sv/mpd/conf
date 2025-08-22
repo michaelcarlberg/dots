@@ -1,0 +1,8 @@
+#!/bin/sh
+# shellcheck disable=2034
+
+OPTS="--no-daemon --stderr $HOME/.config/mpd/mpd.conf"
+
+LOGGING_ENABLE='true'
+
+LOG_DIR="$HOME/.local/var/log/mpd"

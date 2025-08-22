@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if [ -r ./conf ]; then
+  . ./conf
+fi
+
+cd ~ || exit 1
+
+exec 2>&1
+
+pkill -e -f 'emacs.*\-daemon'
+
+exec /bin/emacs --fg-daemon --eval '(+server-start)'

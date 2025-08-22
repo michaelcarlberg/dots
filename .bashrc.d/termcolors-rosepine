@@ -1,0 +1,217 @@
+#!/bin/sh
+
+variant="${1:-moon}"
+
+# if grep -q light ~/.colormode; then
+#   variant="dawn"
+# fi
+
+if [ "$variant" = "moon" ]; then
+  base00="23/21/36"
+  base01="2a/27/3f"
+  base02="39/35/52"
+  base03="59/54/6d"
+  base04="81/7c/9c"
+  base05="e0/de/f4"
+  base06="f5/f5/f7"
+  base07="d9/d7/e1"
+  base08="ec/eb/f0"
+  base09="eb/6f/92"
+  base0A="f6/c1/77"
+  base0B="ea/9a/97"
+  base0C="3e/8f/b0"
+  base0D="9c/cf/d8"
+  base0E="c4/a7/e7"
+  base0F="b9/b9/bc"
+elif [ "$variant" = "dawn" ]; then
+  base00="fa/f4/ed"
+  base01="ff/fa/f3"
+  base02="f2/e9/de"
+  base03="98/93/a5"
+  base04="6e/6a/86"
+  base05="57/52/79"
+  base06="55/51/69"
+  base07="26/23/3a"
+  base08="1f/1d/2e"
+  base09="b4/63/7a"
+  base0A="ea/9d/34"
+  base0B="d7/82/7e"
+  base0C="28/69/83"
+  base0D="56/94/9f"
+  base0E="90/7a/a9"
+  base0F="c5/c3/ce"
+else
+  base00="19/17/24"
+  base01="1f/1d/2e"
+  base02="26/23/3a"
+  base03="55/51/69"
+  base04="6e/6a/86"
+  base05="e0/de/f4"
+  base06="f0/f0/f3"
+  base07="c5/c3/ce"
+  base08="e2/e1/e7"
+  base09="eb/6f/92"
+  base0A="f6/c1/77"
+  base0B="eb/bc/ba"
+  base0C="31/74/8f"
+  base0D="9c/cf/d8"
+  base0E="c4/a7/e7"
+  base0F="e5/e5/e5"
+fi
+
+color00="$base00"
+color01="$base09"
+color02="$base0F"
+color03="$base0A"
+color04="$base0C"
+color05="$base0E"
+color06="$base0D"
+color07="$base05"
+color08="$base03"
+color09="ff/7a/a1"
+color10="a9/ee/a6"
+# color11="$base0A"
+color11="ff/cc/11"
+color12="9c/cf/ff"
+color13="c4/a7/e7"
+color14="32/d1/c0"
+color15="ef/ec/f8"
+color16="$base09"
+color17="$base0F"
+color18="$base01"
+color19="$base02"
+color20="$base04"
+color21="$base06"
+color_foreground="$base05"
+color_background="$base00"
+
+if [ "$TMUX" != "" ]; then
+  put_template()
+  {
+    printf '\033Ptmux;\033\033]4;%d;rgb:%s\033\033\\\033\\' "$@"
+  }
+  put_template_var()
+  {
+    printf '\033Ptmux;\033\033]%d;rgb:%s\033\033\\\033\\' "$@"
+  }
+  put_template_custom()
+  {
+    printf '\033Ptmux;\033\033]%s%s\033\033\\\033\\' "$@"
+  }
+elif [ "${TERM%%[-.]*}" = "screen" ]; then
+  put_template()
+  {
+    printf '\033P\033]4;%d;rgb:%s\007\033\\' "$@"
+  }
+  put_template_var()
+  {
+    printf '\033P\033]%d;rgb:%s\007\033\\' "$@"
+  }
+  put_template_custom()
+  {
+    printf '\033P\033]%s%s\007\033\\' "$@"
+  }
+elif [ "${TERM%%-*}" = "linux" ]; then
+  put_template()
+  {
+    [ "$1" -lt 16 ] && printf "\e]P%x%s" "$1" "$(echo "$2" | sed 's/\///g')"
+  }
+  put_template_var()
+  {
+    true
+  }
+  put_template_custom()
+  {
+    true
+  }
+else
+  put_template()
+  {
+    printf '\033]4;%d;rgb:%s\033\\' "$@"
+  }
+  put_template_var()
+  {
+    printf '\033]%d;rgb:%s\033\\' "$@"
+  }
+  put_template_custom()
+  {
+    printf '\033]%s%s\033\\' "$@"
+  }
+fi
+
+# 16 color space
+put_template 0 "$color00"
+put_template 1 "$color01"
+put_template 2 "$color02"
+put_template 3 "$color03"
+put_template 4 "$color04"
+put_template 5 "$color05"
+put_template 6 "$color06"
+put_template 7 "$color07"
+put_template 8 "$color08"
+put_template 9 "$color09"
+put_template 10 "$color10"
+put_template 11 "$color11"
+put_template 12 "$color12"
+put_template 13 "$color13"
+put_template 14 "$color14"
+put_template 15 "$color15"
+
+# 256 color space
+put_template 16 "$color16"
+put_template 17 "$color17"
+put_template 18 "$color18"
+put_template 19 "$color19"
+put_template 20 "$color20"
+put_template 21 "$color21"
+
+# foreground / background / cursor color
+put_template_var 10 "$color_foreground"
+put_template_var 11 "$color_background"
+put_template_custom 12 ";7" # cursor (reverse video)
+
+# clean up
+unset -f put_template
+unset -f put_template_var
+unset -f put_template_custom
+unset variant
+unset base00
+unset base01
+unset base02
+unset base03
+unset base04
+unset base05
+unset base06
+unset base07
+unset base08
+unset base09
+unset base0A
+unset base0B
+unset base0C
+unset base0D
+unset base0E
+unset base0F
+unset color00
+unset color01
+unset color02
+unset color03
+unset color04
+unset color05
+unset color06
+unset color07
+unset color08
+unset color09
+unset color10
+unset color11
+unset color12
+unset color13
+unset color14
+unset color15
+unset color16
+unset color17
+unset color18
+unset color19
+unset color20
+unset color21
+unset color_foreground
+unset color_background

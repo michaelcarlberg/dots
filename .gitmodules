@@ -1,0 +1,12 @@
+[submodule ".config/nvim"]
+	path = .config/nvim
+	url = git@gitlab.com:jaagr/nvim.git
+[submodule ".tmux/plugins/tpm"]
+	path = .tmux/plugins/tpm
+	url = https://github.com/tmux-plugins/tpm
+[submodule ".emacs.d"]
+	path = .emacs.d
+	url = https://github.com/doomemacs/doomemacs
+[submodule ".doom.d"]
+	path = .doom.d
+	url = git@gitlab.com:jaagr/doom.d.git

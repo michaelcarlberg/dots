@@ -1,0 +1,142 @@
+#!/usr/bin/env bash
+
+function list-monitors
+{
+  bspc query -M --names
+}
+
+function get-active-monitor
+{
+  bspc query -M -m --names
+}
+
+function get-focused-monitor
+{
+  local mx my m x y w h
+
+  ((mx = $(xdotool getmouselocation --shell | grep X | awk -F "=" '{print $2}')))
+  ((my = $(xdotool getmouselocation --shell | grep Y | awk -F "=" '{print $2}')))
+
+  xrandr --current | sed -nr 's/([^ ]+) [^0-9]+([0-9]+)x([0-9]+)\+([0-9]+)\+([0-9]+).*/m="\1" w=\2 h=\3 x=\4 y=\5/p' | while read -r vars; do
+    eval "$vars"
+    if ! ((mx < x || mx > x + w || my < y || my > y + h)); then
+      echo "$m"
+      break
+    fi
+  done
+}
+
+function get-monitor-status
+{
+  [ "${monitor=$1}" ] || monitor="$(bspwm-helper active-monitor)"
+  bspc wm -g | sed -nr "s/(W|.+:)[mM](${monitor}.+)(:[mM]|\$).*/\2/p"
+}
+
+function get-monitor-state
+{
+  if ! bspc query -M "${1?monitor}" &>/dev/null; then
+    echo "disconnected"
+    exit 1
+  else
+    echo "connected"
+    exit 0
+  fi
+}
+
+function get-desktop-layout
+{
+  get-monitor-status | sed -nr 's/.+:T(T|M):.+/\1/p'
+}
+
+function get-node-state
+{
+  get-monitor-status | sed -nr "s/$(bspwm-helper active-monitor).+:T([^:]+):.+/\1/p"
+}
+
+function cycle-node-state
+{
+  local dir="${1?dir}"
+  case "$dir" in
+    next)
+      case "$(get-node-state)" in
+        T) bspc node -t floating ;;
+        F) bspc node -t pseudo_tiled ;;
+        *) bspc node -t tiled ;;
+      esac
+      ;;
+
+    prev)
+      case "$(get-node-state)" in
+        T) bspc node -t pseudo_tiled ;;
+        F) bspc node -t tiled ;;
+        *) bspc node -t floating ;;
+      esac
+      ;;
+  esac
+}
+
+function main
+{
+  if [ $# -eq 0 ]; then
+    echo "Missing command..." >&2
+    exit 1
+  fi
+
+  cmd="$1"
+  shift
+
+  case "$cmd" in
+    eventhandler) exec "$XDG_CONFIG_HOME/bspwm/eventhandler" "$@" ;;
+
+    reload) "$XDG_CONFIG_HOME/bspwm/bspwmrc" ;;
+
+    active-monitor) get-active-monitor ;;
+
+    other-monitors) bspc query -M --names | grep -v "$(get-active-monitor)" ;;
+
+    focused-monitor) get-focused-monitor ;;
+
+    monitor-status) get-monitor-status "$1" ;;
+
+    list-monitors) list-monitors ;;
+
+    has-monitor) list-monitors | grep -q "^${1?monitor}\$" ;;
+
+    monitor-state) get-monitor-state "${1?monitor}" ;;
+
+    node-state)
+      if [ "$1" = "cycle" ]; then
+        shift
+        dir="${1?cycle dir}"
+        cycle-node-state "$dir"
+      fi
+      if [ $# -eq 1 ]; then
+        get-node-state | grep -q "$1"
+        exit $?
+      else
+        get-node-state
+      fi
+      ;;
+
+    make-rule)
+      notify-send "Pick a window..."
+      xprop -id "$(xdotool selectwindow)" WM_CLASS | sed -nr 's/\S+ = "([^"]+)", "([^"]+)"/\1 \2/p' | while read -r _wm_instance wm_class; do
+        printf 'bspc rule -a %s state=floating center=true\n' "$wm_class"
+      done
+
+      ;;
+
+    toggle-hotkey-daemon)
+      printf 'xToggle\n' >"$XDG_RUNTIME_DIR/sxhkd.sock"
+      ;;
+
+    *)
+      echo "Invalid command: $cmd" >&2
+      exit 1
+      ;;
+  esac
+}
+
+if [ "$_" = "$0" ]; then
+  main "$@"
+fi

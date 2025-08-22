@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+
+set -e
+
+usage()
+{
+  [ "$1" ] && echo -e "$1\n" >&2
+  cat >&2 <<-EOF
+Usage: $0 [...opts]
+
+  -l, --logfile <file>
+  -c, --config <file>
+  -s, --status <file>
+  -d, --daemon
+  -f, --force
+  -h, --help
+
+	EOF
+  exit 1
+}
+
+main()
+{
+  local optforce='false'
+  local optdaemon='false'
+  local logfile="$XDG_CACHE_HOME/sxhkd.log"
+  local pidfile="$XDG_RUNTIME_DIR/sxhkd.pid"
+  local -a args=(-t 1 -a Escape)
+
+  while [ "${1:0:1}" = "-" ]; do
+    case "$1" in
+      -d | --daemon)
+        optdaemon='true'
+        ;;
+      -f | --force)
+        optforce='true'
+        ;;
+      -l | --logfile)
+        logfile="${2?log file}"
+        shift
+        ;;
+      -s | --status)
+        args+=(-s "${2?status fifo}")
+        shift
+        ;;
+      -c | --config)
+        args+=(-c "${2?config file}")
+        shift
+        ;;
+      -h | --help)
+        usage
+        ;;
+      *)
+        usage "Unknown option $1"
+        ;;
+    esac
+    shift
+  done
+
+  if [ -e "$logfile" ]; then
+    mv -fv "$logfile" "${logfile}.1"
+  fi
+
+  if [ -s "$pidfile" ] && pgrep -F "$pidfile" >/dev/null && "$optforce"; then
+    pkill -e -F "$pidfile"
+    pidwait -e -F "$pidfile" || :
+    rm -v "$pidfile"
+  fi
+
+  if pid="$(pgrep -x sxhkd 2>/dev/null)"; then
+    echo "already running: $pid (use -f to replace)" >&2
+    exit 1
+  fi
+
+  set -- "${args[@]}"
+
+  if "$optdaemon"; then
+    nohup sxhkd "$@" &>"$logfile" &
+    echo $! >"$pidfile"
+    pgrep -a -F "$pidfile" | sed 's/--/\n  --/g'
+  else
+    echo $$ >"$pidfile"
+    echo $$ sxhkd "$@"
+    exec &>"$logfile"
+    exec sxhkd "$@"
+  fi
+}
+
+main "$@"

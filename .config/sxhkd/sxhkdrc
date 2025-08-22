@@ -1,0 +1,357 @@
+#
+# Defines keymap for sxhkd
+#
+
+# ~F1
+#   ~/.config/sxhkd/scripts/info.sh
+
+shift + F1
+  sv -x restart bspwm sxhkd picom xbanish; polybar-helper reload; notify-send "sxhkd" "Configuration reloaded."
+
+# mod1 + @{a-z}
+#   pkill -USR2 -x sxhkd; xdotool key {a-z}; pkill -USR2 -x sxhkd
+
+# WM {{{
+
+# Focus node
+# If no window exist, target monitor/desktop instead
+mod1 + k
+  "$XDG_CONFIG_HOME"/tmux/scripts/select-pane -U || bspc node -f north.local || bspc monitor -f north
+mod1 + j
+  "$XDG_CONFIG_HOME"/tmux/scripts/select-pane -D || bspc node -f south.local || bspc monitor -f south
+mod1 + h
+  "$XDG_CONFIG_HOME"/tmux/scripts/select-pane -L || bspc node -f west.local || bspc monitor -f west
+mod1 + l
+  "$XDG_CONFIG_HOME"/tmux/scripts/select-pane -R || bspc node -f east.local || bspc monitor -f east
+
+# mod1 + k
+#   focused-window emacs && notify-send in-emacs && xdotool key alt+k || \
+#     "$XDG_CONFIG_HOME"/tmux/scripts/select-pane -U || bspc node -f north.local || bspc monitor -f north
+# mod1 + j
+#   focused-window emacs && notify-send in-emacs && xdotool key alt+j || \
+#     "$XDG_CONFIG_HOME"/tmux/scripts/select-pane -D || bspc node -f south.local || bspc monitor -f south
+# mod1 + h
+#   focused-window emacs && notify-send in-emacs && xdotool key alt+h || \
+#     "$XDG_CONFIG_HOME"/tmux/scripts/select-pane -L || bspc node -f west.local || bspc monitor -f west
+# mod1 + l
+#   focused-window emacs && notify-send in-emacs && xdotool key alt+l || \
+#     "$XDG_CONFIG_HOME"/tmux/scripts/select-pane -R || bspc node -f east.local || bspc monitor -f east
+
+# Swap node (if no node exist or if node is in floating state, send node to monitor)
+ctrl + mod1 + shift + h
+  node="$(bspc query -N -n)"; if ! bspc node -s west.local || bspwm-helper node-state F; then bspc node -m west && bspc node "$node" -f; fi
+ctrl + mod1 + shift + l
+  node="$(bspc query -N -n)"; if ! bspc node -s east.local || bspwm-helper node-state F; then bspc node -m east && bspc node "$node" -f; fi
+ctrl + mod1 + shift + k
+  node="$(bspc query -N -n)"; if ! bspc node -s north.local || bspwm-helper node-state F; then bspc node -m north && bspc node "$node" -f; fi
+ctrl + mod1 + shift + j
+  node="$(bspc query -N -n)"; if ! bspc node -s south.local || bspwm-helper node-state F; then bspc node -m south && bspc node "$node" -f; fi
+
+# Resize window
+mod1 + r : {_,shift + ,mod1 + ,shift + mod1 + }h
+  val={200,100,50,10}; bspc node @west -r -${val} || bspc node @east -r -${val}
+mod1 + r : {_,shift + ,mod1 + ,shift + mod1 + }l
+  val={200,100,50,10}; bspc node @west -r +${val} || bspc node @east -r +${val}
+mod1 + r : {_,shift + ,mod1 + ,shift + mod1 + }k
+  val={200,100,50,10}; bspc node @north -r -${val} || bspc node @south -r -${val}
+mod1 + r : {_,shift + ,mod1 + ,shift + mod1 + }j
+  val={200,100,50,10}; bspc node @north -r +${val} || bspc node @south -r +${val}
+mod1 + H
+  "$XDG_CONFIG_HOME"/tmux/scripts/resize-pane -L 10 || bspc node @west -r -100 || bspc node @east -r -100
+mod1 + L
+  "$XDG_CONFIG_HOME"/tmux/scripts/resize-pane -R 10 || bspc node @west -r +100 || bspc node @east -r +100
+mod1 + K
+  "$XDG_CONFIG_HOME"/tmux/scripts/resize-pane -U 10 || bspc node @north -r -100 || bspc node @south -r -100
+mod1 + J
+  "$XDG_CONFIG_HOME"/tmux/scripts/resize-pane -D 10 || bspc node @north -r +100 || bspc node @south -r +100
+
+# Set splitting area
+mod1 + ctrl + {h,j,k,l}
+  bspc node -p ~{west,south,north,east}
+
+# Clear splitting indicators for all nodes on the focused desktop
+mod1 + ctrl + c
+  bspc query -N | xargs -I id -n 1 bspc node id -p cancel
+
+# Cycle between nodes, desktops and monitors
+# super + {h,l,j,k}
+#   bspc monitor -f {west,east,south,north}
+# NOTE: disabled since it conflicts with tmux paste way too often
+# mod1 + bracket{left,right}
+#   bspc desktop -f {prev,next}.local.occupied
+mod1 + shift + bracket{left,right}
+  bspc desktop -f {prev,next}.local.occupied
+mod1 + ctrl + bracket{left,right}
+  bspc monitor -f {west,east}
+
+# Focus desktop / transfer node to desktop
+mod1 + {_,shift + }{1-5}
+  bspc {desktop -f,node -d} focused:^{1-5}
+
+# Switch tmux window
+super + {1-5}
+  tmux select-window -t {1-5}
+
+# Toggle fullscreen/floating state
+mod1 + f
+  "$XDG_CONFIG_HOME"/tmux/scripts/toggle-zoom || bspc node -t \~fullscreen
+
+mod1 + t
+  bspc node -t tiled
+mod1 + p
+  bspc node -t pseudo_tiled
+mod1 + ctrl + f
+  bspc node -t floating || bspc node -t tiled
+mod1 + shift + f
+  bspc node -t \~fullscreen
+mod1 + ctrl + {_,shift + }space
+  bspwm-helper node-state cycle {next,prev}
+
+# Close/kill current window
+mod1 + {_,shift + }q
+  bspc node -{c,k}
+
+# swap the current node and the biggest node
+mod1 + shift + s
+  bspc node -s biggest.local
+
+# Move focused desktop/node to previously focused monitor
+# super + {_,shift + }y
+#   bspc {desktop,node focused} -m next && bspc {desktop,node} -f last
+
+# Rotate the tree that the current window belongs to
+mod1 + {_,shift + }c
+  bspc node @parent -R {90,270}
+
+# Cycle desktop layout
+ctrl + space
+  bspwm-helper node-state T || bspc node -t tiled; bspc desktop -l next
+mod1 + m
+  bspwm-helper node-state T || bspc node -t tiled; bspc desktop -l next
+
+# Cycle between windows
+mod1 + {_,shift + }n
+  bspc node -f {next,prev}.local.window
+ctrl + mod1 + {_,shift + }n
+  bspc node -f '{next,prev}.local.!window'
+ctrl + mod1 + 0
+  bspc node -f :/
+
+
+# Balance/equalize nodes in current desktop
+mod1 + equal
+  notify-send "Equalizing nodes"; \
+    bspc query -N -d | xargs -I@ bspc node @ -t tiled; bspc node @/ --equalize
+
+# Balance nodes in current desktop
+mod1 + shift + equal
+  notify-send "Balancing nodes"; \
+    bspc query -N -d | xargs -I@ bspc node @ -t tiled; bspc node @parent --balance
+
+
+# Focus last window
+mod1 + Tab
+  bspc node -f last
+
+# Cycle marked nodes
+super + Tab
+  bspc node -f next.marked.window || bspc node -f next.local.window
+super + shift + Tab
+  bspc node -f prev.marked.window || bspc node -f prev.local.window
+
+# Toggle marked state of current window
+
+super + shift + m
+  bspc node -g marked
+
+# Toggle locked state of current window
+super + shift + comma
+  bspc node -g locked
+
+# Toggle sticky state of current window
+super + shift + period
+  bspc node -g sticky
+
+# Toggle private state of current window
+super + shift + question
+  bspc node -g private
+
+# handled by xkb: terminate:ctrl_alt_bksp
+ctrl + mod1 + BackSpace
+ bspc quit 0
+
+# ~button1
+#   bspc monitor -f "$(bspwm-helper focused-monitor)"
+
+# ~button4
+#   date +%s.%N | tee /tmp/.mb4
+# ~button5
+#   date +%s.%N | tee /tmp/.mb5
+
+ctrl + shift + {button4,button5}
+  bspc node -f {next,prev}.local.window
+ctrl + shift + button5
+  date +%s.%N | tee /tmp/.mb5
+
+# xinput query-state 11 | grep -q 'key[66]=down'
+mod1 + shift + button{4,5}
+  bspc node -f {next,prev}.local.window
+
+# }}}
+# Audio {{{
+
+@XF86Audio{Lower,Raise}Volume
+  volumectl {-,+}
+# shift + {F11,F12}
+#   volumectl {-,+}
+# shift + {KP_Subtract,KP_Add}
+#   volumectl {-,+}
+
+@XF86AudioMute
+  volumectl mute
+# shift + F10
+#   volumectl mute
+# shift + KP_Insert
+#   volumectl mute
+
+mod1 + Left
+  light -U 5.0
+mod1 + Right
+  light -A 5.0
+mod1 + Up
+  volumectl +
+mod1 + Down
+  volumectl -
+
+@XF86AudioPlay
+  mpc -q toggle
+@XF86AudioStop
+  mpc stop
+@XF86Audio{Prev,Next}
+  mpc -q {prev,next}
+
+@XF86AudioMicMute
+  pamixer --default-source -t
+
+# }}}
+# Launcher {{{
+
+mod1 + Return
+  test -e "$XDG_DATA_HOME"/polybar/scripts/tmux.state && "$XDG_CONFIG_HOME"/tmux/scripts/split-biggest || alacritty
+mod1 + ctrl + Return
+  alacritty
+mod1 + KP_Enter
+  alacritty
+
+mod1 + d
+  rofi -show drun -show-icons -window-thumbnail -monitor "$(bspc query -M -m --names)" 2>/dev/null
+mod1 + space
+  rofi -show drun -show-icons -window-thumbnail -monitor "$(bspc query -M -m --names)" 2>/dev/null
+mod1 + shift + i
+  rofimoji -monitor "$(bspc query -M -m --names)"
+
+mod1 + e
+  thunar
+mod1 + shift + e
+  cd ~ && emacs -gui
+mod1 + shift + ctrl + e
+  cd ~ && emacs -gui --debug-init
+super + at
+  notify-send "Launching web browser."; firefox >/dev/null
+
+mod1 + shift + o
+  ~/.config/rofi/scripts/otp.sh
+mod1 + shift + p
+  ~/.config/rofi/scripts/otp.sh
+mod1 + ctrl + t
+  ~/.config/rofi/scripts/tpl.sh
+
+mod1 + u
+  "$XDG_CONFIG_HOME"/bspwm/scripts/scratchpad.sh
+
+# Pause
+#   i3lock -n -u -e -t -i ~/.wallpaper
+# super + l
+#   i3lock -n -u -e -t -c 000000
+Pause
+  slock
+super + l
+  slock
+
+XF86Tools
+  exec xdg-term "mpc play; ncmpcpp"
+
+# alacritty msg create-window -e bash -i -l -c 'mpc play && ncmpcpp'
+# xdg-term exec /usr/bin/alacritty --class floating,Alacritty -T "$title" -e bash -c "$*"
+
+XF86Calculator
+  gnome-calculator
+
+XF86Explorer
+  keepassxc ~/.keepass/vault.kdbx
+
+XF86Favorites
+  keepassxc ~/.keepass/vault.kdbx
+
+mod1 + KP_{0,Insert}
+  keepassxc{_,_} ~/.keepass/vault.kdbx
+
+mod1 + Pause
+  bspwm-helper toggle-hotkey-daemon
+
+shift + KP_1
+  notify-send "xdotool click 1"; xdotool click 1
+shift + KP_2
+  notify-send "xdotool click 2"; xdotool click 2
+shift + KP_3
+  notify-send "xdotool click 3"; xdotool click 3
+
+# }}}
+# Screenshots {{{
+
+# screenshot of focused monitor
+shift + Print
+  ~/scripts/screenshot.sh -M "$(( $(bspc query -M | tac | grep -n -E "$(bspc query -M -m)" | cut -d: -f1) - 1 ))"
+
+# screenshot region and add to clipboard
+Print
+  ~/scripts/screenshot.sh --freeze --select --clipboard
+
+# screenshot of focused window
+# shift + Print
+#   ~/scripts/screenshot.sh --focused
+
+# screenshot of focused monitor
+# super + Print
+#   ~/scripts/screenshot.sh -M "$(( $(bspc query -M | tac | grep -n -E "$(bspc query -M -m)" | cut -d: -f1) - 1 ))"
+
+# screenshot of all monitors
+# mod1 + Print
+#   ~/scripts/screenshot.sh
+
+# }}}
+# Misc {{{
+
+# vt switch
+super + ctrl + @F{1,2,3,4,5,6,7,8,9,10,11,12}
+  sudo chvt {1,2,3,4,5,6,7,8,9,10,11,12}
+
+# change window transparency
+mod1 + ctrl + {KP_Add,KP_Subtract}
+  bspc query -N -n && picom-trans -c {+,-}10
+mod1 + ctrl + KP_{0,Insert}
+  bspc query -N -n && picom-trans -c 100
+mod1 + ctrl + button{4,5}
+  bspc query -N -n && picom-trans -c {+,-}12
+
+Scroll_Lock
+  notify-send -u low "Disabling sxhkd..."; ~/.config/polybar/scripts/sxhkd.sh off
+
+# ctrl + shift + mod1 + plus
+#   bspc query -N -n '.!focused.ancestor_of' | xargs -I{} bspc node {} -f
+# ctrl + mod1 + _
+#   bspc query -N -n 'first_ancestor' | xargs -I{} bspc node {} -f
+
+# }}}
+
+# vim:ft=sxhkdrc

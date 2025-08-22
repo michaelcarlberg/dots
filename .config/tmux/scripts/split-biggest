@@ -1,0 +1,39 @@
+#!/bin/bash
+
+set -e
+
+# shellcheck source=~/.config/tmux/scripts/window-cmd
+source "$XDG_CONFIG_HOME"/tmux/scripts/window-cmd
+
+window_id="$(bspc query -N -n)"
+test "$window_id"
+
+window_name="$(xwininfo -id "$window_id" | sed -nr 's/^xwininfo: .+"(.+)"$/\1/p')"
+test "$window_name"
+
+echo "$window_name" | grep -qi terminal
+
+declare -i w=0
+declare -i h=0
+
+if presel="$(bspc query -T -n | jq -er .presel.splitDir)"; then
+  case "$presel" in
+    south) tmux split-pane -v ;;
+    east) tmux split-pane -h ;;
+    north | west) exit 1 ;; # TODO: swap split with previous pane to allow north/west dir
+  esac
+else
+  read -r w < <(tmux display -p '#{pane_width}')
+  read -r h < <(tmux display -p '#{pane_height}')
+
+  : $((w /= 3))
+
+  if ((w > h)); then
+    tmux split-pane -h
+  else
+    tmux split-pane -v
+  fi
+fi
+
+# clear node presel overlay
+bspc query -N -n | xargs -I id -n 1 bspc node id -p cancel || :

@@ -1,0 +1,8 @@
+#!/bin/sh
+# shellcheck disable=1091
+
+[ -r ./conf ] && . ./conf
+
+# shfmt:ignore
+# shellcheck disable=2086
+exec thinkfan -n $OPTS 2>&1

@@ -1,0 +1,42 @@
+@theme "rounded-horizon.rasi"
+
+configuration {
+  // kb-custom-1: "0x3f";
+
+  kb-toggle-sort: "Control+s"; 
+
+  kb-row-up: "Up,Control+k";
+
+  kb-row-up: "Up,Control+k";
+  kb-row-down: "Down,Control+j";
+
+  kb-remove-char-forward: "Delete";
+  kb-remove-to-sol: "Control+h";
+
+  kb-page-next: "Control+d";
+  kb-page-prev: "Control+u";
+
+  kb-accept-entry: "Return,KP_Enter";
+
+  kb-mode-next: "Tab";
+  kb-mode-previous: "Shift+Tab,ISO_Left_Tab";
+
+  kb-remove-char-back: "BackSpace";
+  kb-remove-to-eol: "Control+Shift+e";
+
+  kb-element-prev: "";
+  kb-element-next: "";
+
+  terminal: "alacritty";
+
+  // kb-cancel: "Escape,Alt_R,Ctrl+c";
+  kb-cancel: "Escape,Alt_R";
+
+  run, drun {
+    fallback-icon: "application-x-executable";
+  }
+
+  ssh {
+    fallback-icon: "computer";
+  }
+}

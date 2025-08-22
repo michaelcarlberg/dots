@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -xe
+
+notify()
+{
+  case "$1" in
+    0) notify-send -u low "picom reloaded" ;;
+    *) notify-send -u low "failed to reload picom($1)" ;;
+  esac
+}
+
+trap 'notify $?' EXIT
+
+if command -v sv >/dev/null && sv -x check picom; then
+  sv -x restart picom
+elif [ -r "$XDG_RUNTIME_DIR"/picom.pid ]; then
+  pkill -USR1 -e -F "$XDG_RUNTIME_DIR"/picom.pid
+elif pgrep -x picom >/dev/null; then
+  pkill -USR1 -e -x picom
+else
+  exit 1
+fi
+
+pkill -9 -e -f 'bspwm-helper eventloop picom' || :

@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+
+# shellcheck source=~/.config/tmux/scripts/window-cmd
+source "$XDG_CONFIG_HOME"/tmux/scripts/window-cmd
+
+if ! xdotool getactivewindow getwindowname | grep -qi terminal; then
+  exit 1
+elif tmux display -p '#{window_panes}' | grep -q 1; then
+  exit 1
+fi
+
+direction="${1?direction}"
+amount="${2?amount}"
+
+case "$direction" in
+  -U | -D) tmux display -p '#{pane_at_top}#{pane_at_bottom}' | grep -q 11 && exit 1 ;;
+  -L | -R) tmux display -p '#{pane_at_right}#{pane_at_left}' | grep -q 11 && exit 1 ;;
+esac
+
+tmux resize-pane "$direction" "$amount"

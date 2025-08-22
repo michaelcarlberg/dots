@@ -1,0 +1,12 @@
+#!/bin/sh
+# shellcheck disable=2034
+
+export PINENTRY=rofi
+export TERMINAL=alacritty
+
+SOCKET="$XDG_RUNTIME_DIR/sxhkd.sock"
+OPTS="-t 1 -a Escape -s $SOCKET -c $XDG_CONFIG_HOME/sxhkd/sxhkdrc -r /dev/null"
+
+LOGGING_ENABLE='true'
+
+LOG_DIR="$HOME/.local/var/log/sxhkd"

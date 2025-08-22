@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -e
+
+export DOOMDIR=/tmp/doomemacs/.doom.d
+export EMACSDIR=/tmp/doomemacs/.emacs.d
+export EMACS=/bin/emacs
+
+mkdir -p "$DOOMDIR"
+mkdir -p "$EMACSDIR"
+
+pushd "$EMACSDIR"
+{
+  if [ ! -d .git ]; then
+    printf "** Installing Doom Emacs\n"
+    git clone --depth 1 --recursive https://github.com/doomemacs/doomemacs .
+    ./bin/doom install --force
+  else
+    printf "** Updating Doom Emacs\n"
+    ./bin/doom sync
+  fi
+}
+popd
+
+exec "$EMACS" "$@"

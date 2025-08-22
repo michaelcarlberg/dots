@@ -1,0 +1,17 @@
+#!/bin/sh
+# shellcheck disable=1091
+
+exec 2>&1
+
+[ "$DISPLAY" ] || exit 0
+
+[ -r ./conf ] && . ./conf
+
+cd ~ || exit 1
+
+# shfmt:ignore
+(while ! bspc wm -g >/dev/null 2>&1; do sleep 1; done; "$XDG_CONFIG_HOME"/bspwm/eventhandler start) &
+
+# shellcheck disable=2086
+# shfmt:ignore
+exec bspwm $OPTS

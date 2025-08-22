@@ -1,0 +1,89 @@
+[colors.primary]
+background = "#1a1c27"
+foreground = "#cbced9"
+dim_foreground = "#4a4f7a"
+bright_foreground = "#e3e6ff"
+
+[colors.cursor]
+text = "#1a1c27"
+cursor = "#cbced6"
+
+[colors.normal]
+black = "#1a1c27"
+red = "#e95678"
+green = "#29d398"
+yellow = "#fac29a"
+blue = "#26bbd9"
+magenta = "#ee64fc"
+cyan = "#59e1e3"
+white = "#ebeef9"
+
+[colors.bright]
+black = "#676a8d"
+red = "#ee3b3b"
+green = "#51ff9a"
+yellow = "#ffd45d"
+blue = "#1e90ff"
+magenta = "#fea4ff"
+cyan = "#59e1e3"
+white = "#e3e6ee"
+
+[colors]
+indexed_colors = [
+  { index = 16, color = "#151620" },
+  { index = 17, color = "#1a1c27" },
+  { index = 18, color = "#14161e" },
+  { index = 19, color = "#2a2c40" },
+  { index = 20, color = "#ced1e6" },
+  { index = 21, color = "#dcdff4" },
+  { index = 97, color = "#4020c0" },
+  { index = 98, color = "#6030ff" },
+  { index = 99, color = "#9999ff" },
+  { index = 100, color = "#ffd45d" },
+  { index = 101, color = "#ff9900" },
+  { index = 102, color = "#dd5500" },
+  { index = 123, color = "#ff045a" },
+  { index = 124, color = "#e5003a" },
+  { index = 125, color = "#d00030" },
+  { index = 126, color = "#a01020" },
+  { index = 127, color = "#731a2f" },
+  { index = 128, color = "#3a334a" },
+  { index = 129, color = "#5c556a" },
+  { index = 220, color = "#000000" },
+  { index = 221, color = "#101115" },
+  { index = 222, color = "#151620" },
+  { index = 223, color = "#1a1c27" },
+  { index = 224, color = "#14161e" },
+  { index = 225, color = "#161629" },
+  { index = 226, color = "#1f1f32" },
+  { index = 227, color = "#282848" },
+  { index = 228, color = "#333366" },
+  { index = 229, color = "#383888" },
+  { index = 230, color = "#3a3a62" },
+  { index = 231, color = "#4a4a75" },
+  { index = 232, color = "#50507f" },
+  { index = 233, color = "#585885" },
+  { index = 234, color = "#5e5e8c" },
+  { index = 235, color = "#5858f8" },
+  { index = 235, color = "#61618f" },
+  { index = 236, color = "#707098" },
+  { index = 237, color = "#7979a5" },
+  { index = 238, color = "#8282a2" },
+  { index = 239, color = "#8b8baa" },
+  { index = 240, color = "#9494d0" },
+  { index = 241, color = "#9d9dc1" },
+  { index = 242, color = "#a6a6cb" },
+  { index = 243, color = "#afafcf" },
+  { index = 244, color = "#b8b8d7" },
+  { index = 245, color = "#c1c1e4" },
+  { index = 246, color = "#cacaef" },
+  { index = 247, color = "#ced1ea" },
+  { index = 248, color = "#d3d3ef" },
+  { index = 249, color = "#dcdff4" },
+  { index = 250, color = "#e6e6fa" },
+  { index = 251, color = "#eaeaf5" },
+  { index = 252, color = "#f1f2fb" },
+  { index = 253, color = "#f5f5ff" },
+  { index = 254, color = "#fafaff" },
+  { index = 255, color = "#ffffff" },
+]

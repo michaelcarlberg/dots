@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# shellcheck disable=2009
+
+declare -a opts=()
+declare -a args=()
+
+for v in "$@"; do
+  case "$v" in
+    -*) opts+=("$v") ;;
+    *) args+=("$v") ;;
+  esac
+done
+
+set -- "${args[@]}"
+
+if [[ "${opts[*]}" =~ -t ]]; then
+  pgrep -i -f "$*" \
+    | xargs -I@ pstree -p -a -U -T @ \
+    | sed -r -e '1s/^/[2m/' -e '$s/$/[0m/' -e "s/($*)/[30;42m\1[0;2m/" -e "/,$$\$/,/^[^ ]/d" -e "/,$$ /,/^[^ ]/d"
+elif [[ "${opts[*]}" =~ -q ]]; then
+  pgrep -i -f "$*" | sed -r -e "/^$$\$/d"
+else
+  pgrep -a -i -f "$*" \
+    | sed -r -e "/^$$ /,+1d" \
+    | sed -r -e '1s/^/[2m/' -e '$s/$/[0m/' -e "s/($*)/[30;42m\1[0;2m/"
+fi

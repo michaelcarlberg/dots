@@ -1,0 +1,126 @@
+#!/usr/bin/env sh
+
+alias dots='git --git-dir=$HOME/.dots.git/ --work-tree=$HOME'
+
+alias ..='cd ..'
+alias ls='ls --color=auto --group-directories-first --dereference-command-line'
+alias ll='ls -lh'
+alias la='ls -lAh'
+alias l1='ls -1'
+alias l='ls -CF'
+
+alias grep='grep -i --color=auto'
+alias grepr='grep -r'
+alias grepv='grep -v'
+alias egrep='egrep -i --color=auto'
+alias rg='rg -i'
+
+alias vi='nvim'
+alias vim='nvim'
+alias ivm='nvim'
+alias sudo='sudo '
+
+alias g='git'
+alias ga='git add'
+alias grm='git rm'
+alias gd='git diff'
+alias gds='git diff --staged'
+alias gco='git checkout'
+alias gst='git status'
+alias gri='git rebase -i'
+alias grc='git rebase --continue'
+alias ggpur='git pull --rebase'
+alias gcm='git commit -m'
+alias gbl='git branch -l'
+alias gbL='git branch --all'
+alias glg='git log --graph --oneline --all'
+alias gbx='git branch -d'
+alias gbX='git branch -D'
+alias gia='git add --verbose'
+alias giu='git add --update --verbose'
+alias gcf='git commit --amend --reuse-message HEAD'
+alias gcF='git commit --verbose --amend'
+alias gwip='git add -A; git commit --no-verify --no-gpg-sign -m "--wip-- [skip ci]"'
+alias gunwip='git log -n 1 | grep -q -- --wip-- && git reset HEAD~1'
+alias ggpush='git push "$(git rev-parse --abbrev-ref --symbolic-full-name @{u} | cut -d/ -f1)" "$(git rev-parse --abbrev-ref HEAD)"'
+alias git-clone-shallow='git clone --recursive --depth=1'
+
+alias emacs='emacs -nw'
+alias emacsclient='emacsclient -nw'
+alias emacs-daemon-p='pgrep -f emacs.*daemon >/dev/null'
+alias e='emacsclient -a emacs'
+alias c='e'
+
+alias goget='go get'
+alias gogu='go get -u'
+alias gorun='go run'
+alias gobuild='go build'
+alias gomt='go mod tidy'
+
+alias config.bspwm='e ~/.config/bspwm/bspwmrc'
+alias config.sxhkd='e ~/.config/sxhkd/sxhkdrc'
+alias config.polybar='e ~/.config/polybar/config.ini'
+alias config.alacritty='e ~/.config/alacritty/alacritty.yml'
+alias config.tmux='e ~/.config/tmux/tmux.conf'
+alias config.xinit='e ~/.config/xorg/xinitrc.exwm'
+alias config.kbd='~/.config/xorg/configure-keyboard.sh'
+
+alias setxkbmap='setxkbmap -config ~/.config/xorg/xkbmap.config'
+alias polybar='polybar -l warning'
+alias phelper='polybar-helper'
+alias plogs='polybar-helper logs'
+alias bhelper='bspwm-helper'
+
+alias maxbrightness='light -S 100.00'
+alias minbrightness='light -S 10.00'
+
+alias dmesg='sudo dmesg -H -x'
+alias wget='wget --no-hsts'
+alias w3m-priv='http_proxy=http://127.0.0.1:8888 https_proxy=https://127.0.0.1:8888 w3m -no-cookie -bookmark /dev/null -config /dev/null https://duckduckgo.com'
+alias w3m-priv-noproxy='w3m -no-cookie -bookmark /dev/null -config /dev/null https://duckduckgo.com'
+alias links='w3m'
+alias otp='cloak'
+alias sctl='systemctl'
+alias jctl='journalctl -b -e'
+alias phoneviewer-usb='scrcpy --stay-awake --turn-screen-off --no-audio --no-mipmaps --no-cleanup --video-bit-rate 1M --select-usb'
+alias phoneviewer-tcp='scrcpy --stay-awake --turn-screen-off --no-audio --no-mipmaps --no-cleanup --video-bit-rate 1M --select-tcpip'
+alias phoneviewer='adb devices | sed -r "1d;s/\s.*//" | fzf --select-1 | xargs -I{} scrcpy --stay-awake --turn-screen-off --no-audio --no-mipmaps --no-cleanup --video-bit-rate 1M -s {}'
+alias ssh-pw="ssh -o PasswordAuthentication=yes"
+alias ssh-void="ssh user@void.local"
+alias termclock="tty-clock -b -c -C 7 -f \"%A %d/%m/%y\" -B -a 100000000 -d 0"
+alias veracrypt='veracrypt -t'
+alias kpass='~/.keepass/wrapper.sh'
+alias lockscreen='i3lock -n -u -e -t -c 000000'
+alias pygmentize='pygmentize -P style=one-dark'
+alias aquatone='aquatone -chrome-path "$(which google-chrome)"'
+
+alias invertcolors='xcalib -i -a'
+alias xev='xev -id $(bspwm query -N -n) -1 -rv -event keyboard -geometry 0x0+10+10 '
+alias xev-window='xev -id $(bspwm query -n _--___ _________________ )-rv -event keyboard -geometry 0x0+10+10 '
+alias displayfix='xrandr --output eDP1 --off ; xrandr --output eDP1 --auto --left-of $(xrandr -q | grep -E " connected" | grep -vE "^eDP" | cut -d" " -f1)'
+alias clipregion='~/scripts/screenshot.sh --clipboard --select --freeze'
+alias shutils='cd ~/src/sh/utils/; e "$(find . -maxdepth 1 -type f -name "*.sh" | fzf -d/ --with-nth -1)"'
+alias colors='~/scripts/colors.py'
+alias next-cronjob='date --date=@$(cronnext -i $USER | grep -o -E "[0-9]+")'
+alias +rm='shred -uvz'
+alias net-usage='bandwhich || bmon'
+alias xlaunch='$XDG_CONFIG_HOME/xorg/launch'
+
+alias google-font-link='find /storage/data/fonts/ -mindepth 1 -maxdepth 1 -type d -print | fzf -d/ --with-nth=-1 | xargs -I{} ln -vsf {} ~/.local/share/fonts'
+alias google-font-unlink='find ~/.local/share/fonts -type l -exec readlink -f {} \; | grep /storage/data/fonts | cut -d/ -f5 | fzf | xargs -I{} echo rm -vf ~/.local/share/fonts/{}'
+
+# shellcheck disable=2142
+alias ports="sudo sh -c \"lsof -i 4 -P -n | grep -i listen | awk '{print \\\$3, \\\$2, \\\$1, \\\$9}' | sed 's/ [a-z0-9\.\*]*:/ /' | sort -k 4 -n -u | xargs printf '%8s %s %s %s\n' | column -t -R 1,2,3 -N USER,PID,PROCESS,PORT\""
+alias nohist='export HISTFILE=/dev/null'
+alias gohckz='cd /.v && . activate.sh'
+alias priv='source ~/.priv'
+alias priv-proxy='source ~/.priv proxy'
+
+alias cpu-perf-max='sudo x86_energy_perf_policy -a performance'
+alias cpu-perf-normal='sudo x86_energy_perf_policy -a normal'
+
+# shellcheck disable=2154
+alias -- +proxy='export all_proxy=127.0.0.1:8888 https_proxy=127.0.0.1:8888 http_proxy=127.0.0.1:8888 && echo "proxy = $http_proxy"'
+alias -- -proxy='unset all_proxy https_proxy http_proxy && echo "proxy = unset"'
+
+alias ff='firefox'

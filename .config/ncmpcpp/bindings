@@ -1,0 +1,88 @@
+def_key "k"
+  scroll_up
+def_key "j"
+  scroll_down
+
+def_key "K"
+  move_selected_items_up
+def_key "J"
+  move_selected_items_down
+def_key "ctrl-k"
+  move_selected_items_up
+def_key "ctrl-j"
+  move_selected_items_down
+
+def_key "h"
+  seek_backward
+def_key "l"
+  seek_forward
+
+def_key "space"
+  select_item
+  scroll_down
+
+def_key "H"
+  previous_column
+def_key "L"
+  next_column
+
+def_key "u"
+  page_up
+def_key "d"
+  page_down
+def_key "ctrl-u"
+  page_up
+def_key "ctrl-d"
+  page_down
+
+def_key "ctrl-p"
+  previous_screen
+def_key "ctrl-n"
+  next_screen
+
+def_key "G"
+  move_end
+def_key "g"
+  move_home
+
+def_key "ctrl-o"
+  show_lyrics
+def_key "W"
+  toggle_screen_lock
+
+def_key "]"
+  next
+def_key "["
+  previous
+def_key "}"
+  next_screen
+def_key "{"
+  previous_screen
+
+
+def_key "."
+  jump_to_playing_song
+
+def_key "c"
+  clear_main_playlist
+def_key "C"
+  toggle_consume
+def_key "R"
+  toggle_repeat
+
+def_key "+"
+  run_external_command "amixer -q -c 0 set Master playback 1dB+ >/dev/null"
+def_key "-"
+  run_external_command "amixer -q -c 0 set Master playback 1dB- >/dev/null"
+def_key "0"
+  run_external_command "amixer -q -c 0 set Master toggle"
+def_key "m"
+  run_external_command "amixer -q -c 0 set Master toggle"
+
+def_command "quit" [deferred]
+  quit
+def_command "quit!" [deferred]
+  stop
+  quit
+
+# vim:syntax=conf

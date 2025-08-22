@@ -1,0 +1,18 @@
+# include "/usr/share/kbd/keymaps/include/vim-compose.latin1"
+
+plain keycode 58 = Escape
+# control keycode 58 = Escape
+shift keycode 58 = Escape
+alt keycode 58 = Escape
+altgr keycode 58 = Escape
+altgr control keycode 58 = Escape
+altgr control alt keycode 58 = Escape
+altgr control alt shift keycode 58 = Escape
+control alt keycode 58 = Escape
+control shift keycode 58 = Escape
+control alt shift keycode 58 = Escape
+shift altgr keycode 58 = Escape
+altgr alt keycode 58 = Escape
+shift alt keycode 58 = Escape
+shift altgr alt keycode 58 = Escape
+shift altgr control keycode 58 = Escape

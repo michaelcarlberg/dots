@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+source bootstrap.sh
+
+include utils/color.sh
+
+bootstrap::finish
+
+main()
+{
+  color::brightness "${1?color}" "${2:-1.0}"
+}
+
+main "$@"

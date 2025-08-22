@@ -1,0 +1,37 @@
+[user]
+  email = c@rlberg.se
+  name = Michael Carlberg
+  signingkey = EFBC5C49C8205280
+[core]
+  pager = less
+[init]
+  defaultBranch = main
+[commit]
+  gpgsign = true
+[push]
+  default = matching
+[merge]
+  tool = vimdiff
+  conflictstyle = diff3
+[mergetool]
+  prompt = false
+[color]
+  diff = auto
+  status = auto
+  branch = auto
+  interactive = auto
+  ui = true
+  pager = true
+[color "status"]
+  branch = green
+[alias]
+  update = add -u .
+  unstage = restore --staged
+  untracked = status -unormal .
+  untracked-at = status -unormal
+  assume-unchanged = update-index --assume-unchanged
+  ls-modules = submodule status --recursive
+  ls = ls-files
+  st = status
+  lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %C(dim white)(%an)%Creset %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
+  lg2 = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all

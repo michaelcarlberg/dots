@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 1 ] && [ "$PPID" -ne 1 ]; then
+  parent="$(ps -h -o cmd -p "$PPID" | cut -d' ' -f2)"
+  [ "${parent:0:1}" != '-' ] && set -- "${parent//$HOME/\~}" "$1"
+fi
+
+if [ "$1" = "" ]; then
+  shift
+fi
+
+if ! pgrep -x wired >/dev/null && pgrep -x polybar >/dev/null; then
+  exec >/dev/null
+
+  while getopts ":u:" opt; do
+    case ${opt} in
+      u) urgency="$OPTARG" ;;
+      :)
+        echo "Invalid option: $OPTARG requires an argument" >&2
+        exit 1
+        ;;
+      *)
+        echo "Invalid option: $OPTARG" >&2
+        exit 1
+        ;;
+    esac
+  done
+  shift $((OPTIND - 1))
+
+  if [ $# -eq 0 ]; then
+    echo 'error: Notification text cannot be empty' >&2
+    exit 1
+  fi
+
+  pgrep -a polybar | while read -r line; do
+    bar="$(echo "$line" | tr ' ' '\n' | tail -1)"
+
+    if [ "$urgency" ]; then
+      polybar-helper notify -u "$urgency" "$bar" "$@" &
+    else
+      polybar-helper notify "$bar" "$@" &
+    fi
+  done
+else
+  exec /usr/bin/notify-send "$@"
+fi

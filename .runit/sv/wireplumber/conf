@@ -1,0 +1,10 @@
+#!/bin/sh
+# shellcheck disable=2034
+
+OPTS=''
+
+LOGGING_ENABLE='true'
+
+LOG_LEVEL=2 # https://pipewire.pages.freedesktop.org/wireplumber/daemon-logging.html
+
+LOG_DIR="$HOME/.local/var/log/wireplumber"

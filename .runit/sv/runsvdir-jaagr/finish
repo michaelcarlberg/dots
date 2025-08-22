@@ -1,0 +1,4 @@
+#!/bin/sh
+
+sv -w600 force-stop /home/jaagr/.runit/runsvdir/*
+sv exit /home/jaagr/.runit/runsvdir/*

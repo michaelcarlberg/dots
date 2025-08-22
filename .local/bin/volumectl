@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -e
+
+case "${action=${1:--h}}" in
+  [+-][0-9] | [+-][0-9][0-9] | [+-][0-9][0-9][0-9]) pactl set-sink-volume @DEFAULT_SINK@ "${action}%" ;;
+  +) pactl set-sink-volume @DEFAULT_SINK@ +5% ;;
+  -) pactl set-sink-volume @DEFAULT_SINK@ -5% ;;
+  mute) pactl set-sink-mute @DEFAULT_SINK@ toggle ;;
+  -h | --help)
+    cat >&2 <<-EOF
+		Usage: ${0##*/} <cmd>
+
+		  mute  toggle mute state
+		     +  increase volume by 5%
+		     -  decrease volume by 5%
+		    +N  increase volume by N%
+		    -N  decrease volume by N%
+		    -h  display this help and exit
+
+		EOF
+    exit 1
+    ;;
+
+  *)
+    printf 'Unknown command: %s\n' "$action" >&2
+    exit 1
+    ;;
+esac

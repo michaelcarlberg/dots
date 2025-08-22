@@ -1,0 +1,54 @@
+#!/bin/bash
+
+_bspwm_helper_complete()
+{
+  local commands='eventhandler
+                  reload
+                  active-monitor
+                  other-monitors
+                  focused-monitor
+                  monitor-status
+                  monitor-state
+                  list-monitors
+                  has-monitor
+                  node-state
+                  make-rule
+                  toggle-hotkey-daemon'
+
+  local prev="${COMP_WORDS[COMP_CWORD - 1]}"
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+
+  case "${COMP_WORDS[1]}" in
+    node-state)
+      case "$prev" in
+        cycle)
+          mapfile -t COMPREPLY < <(compgen -W "next prev" -- "$cur")
+          ;;
+        node-state)
+          mapfile -t COMPREPLY < <(compgen -W "T P F = @ cycle" -- "$cur")
+          ;;
+      esac
+      return
+      ;;
+  esac
+
+  case "$prev" in
+    eventhandler)
+      mapfile -t COMPREPLY < <(compgen -W "start stop restart kill" -- "$cur")
+      ;;
+
+    has-monitor | monitor-status | monitor-state)
+      monitors="$(xrandr --current | grep ' connected' | cut -d' ' -f1 | sort -u)"
+
+      mapfile -t COMPREPLY < <(compgen -W "$monitors" -- "$cur")
+
+      if [ ${#COMPREPLY[@]} -eq 0 ]; then
+        mapfile -t COMPREPLY < <(compgen -W "$monitors" -- "${cur^^}")
+      fi
+      ;;
+
+    bspwm-helper | bhelper) mapfile -t COMPREPLY < <(compgen -W "$commands" -- "$cur") ;;
+  esac
+}
+
+complete -F _bspwm_helper_complete bspwm-helper bhelper

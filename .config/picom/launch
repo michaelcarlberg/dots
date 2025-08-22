@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -e
+
+if pgrep -x picom &>/dev/null; then
+  pkill -e -x picom
+  pkill -9 -e -f 'bspwm-helper.+picom' || :
+fi
+
+picom --daemon \
+  --config "${1:-$XDG_CONFIG_HOME/picom/picom.conf}" \
+  --log-file "${2:-$XDG_CACHE_HOME/picom.log}" \
+  --write-pid-path "$XDG_RUNTIME_DIR/picom.pid"
+pgrep -a -F "$XDG_RUNTIME_DIR/picom.pid" | sed 's/--/\n  --/g'
+
+# bspwm-helper eventloop picom &

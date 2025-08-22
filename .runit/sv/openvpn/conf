@@ -1,0 +1,8 @@
+#!/bin/sh
+# shellcheck disable=2034
+
+OPTS="--config $HOME/.openvpn/my_expressvpn_norway_udp.ovpn"
+
+LOGGING_ENABLE='true'
+
+LOG_DIR="$HOME/.local/var/log/openvpn"

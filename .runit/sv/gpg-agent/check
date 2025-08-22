@@ -1,0 +1,3 @@
+#!/bin/sh
+
+echo UPDATESTARTUPTTY | gpg-connect-agent | grep -q OK

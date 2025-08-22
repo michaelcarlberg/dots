@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+config="$XDG_CONFIG_HOME/arduino15/arduino-cli.yaml"
+declare -a args=()
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --config-file=*)
+      config="${1#--config-file=}"
+      ;;
+
+    --config-file)
+      config="$2"
+      shift
+      ;;
+
+    *) args+=("$1") ;;
+  esac
+  shift
+done
+
+/usr/bin/arduino-cli --config-file "$config" "${args[@]}"

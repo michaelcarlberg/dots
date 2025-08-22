@@ -1,0 +1,264 @@
+#!/usr/bin/env bash
+
+function get-config-bars
+{
+  sed -nr 's|\[bar/([^]]+)]|\1|p' "${1:-$XDG_CONFIG_HOME/polybar/config.ini}"
+}
+
+function get-monitor-bars
+{
+  if [ "$1" = "" ]; then
+    set -- "$(bspwm-helper active-monitor)"
+  fi
+  monitor="$1"
+  xdotool search --name "polybar-\w+_${monitor}" | while read -r window; do
+    pid="$(xdotool getwindowpid "$window")"
+    ps -o cmd= -p "$pid" | tr ' ' '\n' | tail -1
+  done
+}
+
+function show-notification
+{
+  while [ "${1:0:1}" = '-' ]; do
+    case "$1" in
+      -q) exec >/dev/null ;;
+      -u)
+        urgency="${2?urgency}"
+        shift
+        ;;
+    esac
+    shift
+  done
+
+  if [ $# -eq 0 ]; then
+    set -- "$(get-monitor-bars "$(bspwm-helper active-monitor)" | head -1)"
+  fi
+
+  bar="${1?bar}"
+  shift
+
+  pid="$(polybar-helper pid "$bar")"
+  if [ "$pid" = "" ]; then
+    printf -- 'Bar is not running: %s\n' "$bar" >&2
+    exit 1
+  fi
+
+  echo "Showing notification..."
+  exec >/dev/null
+  pgrep -f "polybar-helper notify $bar" | grep -v "$$" | xargs -I% /usr/bin/kill %
+
+  polybar-msg -p "$pid" action "#messages.module_show"
+  trap 'polybar-msg -p "$pid" action "#messages.module_hide"' EXIT
+
+  case "$urgency" in
+    low)
+      foreground="$(sed -nr 's/^foreground[ ]*=[ ]*(#.+)$/\1/p' "$XDG_CONFIG_HOME/polybar/config.ini")"
+      foreground="${foreground:-#ffffff}"
+      accent="#fba922"
+      polybar-msg -p "$pid" action messages send "%{F#${accent:1}}%{F#ff${foreground:1}} $*"
+      sleep 2
+      ;;
+
+    critical)
+      foreground="$(sed -nr 's/^foreground[ ]*=[ ]*(#.+)$/\1/p' "$XDG_CONFIG_HOME/polybar/config.ini")"
+      foreground="${foreground:-#ffffff}"
+      accent="#fba922"
+      polybar-msg -p "$pid" action messages send "%{B#e60053 F#ffffff}  $*  "
+      sleep 4
+      ;;
+
+    *)
+      foreground="$(sed -nr 's/^foreground[ ]*=[ ]*(#.+)$/\1/p' "$XDG_CONFIG_HOME/polybar/config.ini")"
+      foreground="${foreground:-#ffffff}"
+      accent="#fba922"
+      while ((i++ < 2)); do
+        polybar-msg -p "$pid" action messages send "%{F#${accent:1}}%{F#ff${foreground:1}} $*"
+        sleep .75
+        polybar-msg -p "$pid" action messages send "%{F#ff${accent:1}}%{F#77${foreground:1}} $*"
+        sleep .75
+      done
+      polybar-msg -p "$pid" action messages send "%{F#${accent:1}}%{F#ff${foreground:1}} $*"
+      sleep 2
+      ;;
+  esac
+
+  polybar-msg -p "$pid" action messages send ""
+}
+
+function logtail
+{
+  local logdir="$XDG_CACHE_HOME/polybar"
+  local spcrc="$XDG_CACHE_HOME/polybar/spcrc"
+  local -a findopts=()
+
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      -r) rm -vf "$spcrc" ;;
+      *)
+        logfile="${*%.log}"
+        findopts+=(-name "${logfile:-*}.log*")
+        ;;
+    esac
+    shift
+  done
+
+  if [ ! -f "$spcrc" ]; then
+    cat >"$spcrc" <<-EOF
+			Yellow               yel       (==> .+ <==)
+			White                whi b     (^polybar)\|
+			Black                blk       ^polybar(\|)
+			Black                blk       ^polybar\|\w+(:)
+			Magenta              mag b     ^polybar\|((notice|trace))
+			Cyan                 cya b     ^polybar\|(trace)
+			White                whi b     ^polybar\|(info)
+			Yellow               yel b     ^polybar\|(warn)
+			Red                  red b     ^polybar\|(error)
+			Blue                 blu       ^polybar\|\w+:[ ]*(module/[^ ]+):
+			White                whi b   R ^polybar\|\w+:[ ]*(disabling module "[^"]*")
+			Red                  red u   R ^polybar\|error:.*(err(or)?)
+		EOF
+  fi
+
+  cd "$logdir" || exit 1
+  find . -type f "${findopts[@]}" -printf '%f\n' | grep -v spcrc | sort -k 3nr -t. \
+    | xargs tail -F -n200 | spc -c "$spcrc"
+}
+
+function main
+{
+  if [ $# -eq 0 ]; then
+    echo "Missing command..." >&2
+    exit 1
+  fi
+
+  cmd="$1"
+  shift
+
+  case "$cmd" in
+    window-id)
+      if [ $# -eq 0 ]; then
+        bspwm-helper list-monitors | while read -r monitor; do
+          polybar-helper window-id -m "$monitor"
+        done
+        return
+      elif [ "${1:0:1}" != '-' ]; then
+        set -- -p "$1"
+      fi
+      while getopts ":m:p:" opt; do
+        case ${opt} in
+          m) xdotool search --name --class "polybar-.+_${OPTARG}\$" ;;
+          p) xdotool search --name --class "polybar-${OPTARG}_.+\$" ;;
+          :) echo "Invalid option: $OPTARG requires an argument" >&2 ;;
+          *) echo "Invalid option: $OPTARG" >&2 ;;
+        esac
+      done
+      ;;
+
+    monitor)
+      bar="${1?bar}"
+      config="${2:-$XDG_CONFIG_HOME/polybar/config.ini}"
+      mapfile -t bars < <(get-config-bars "$config")
+
+      if ! grep -q " $bar " <<<" ${bars[*]} "; then
+        printf -- "Invalid bar: %s\n\n" "$bar" >&2
+        printf -- "%s: %s\n" "$config" "${bars[*]}" >&2
+        exit 1
+      fi
+
+      while read -r monitor; do
+        if bspwm-helper monitor-state "$monitor" &>/dev/null; then
+          echo "$monitor"
+          exit
+        fi
+      done < <(
+        exec 2>/dev/null
+        polybar -q -c "$config" -d monitor "$bar"
+        polybar -q -c "$config" -d monitor-fallback "$bar"
+      )
+
+      exit 1
+      ;;
+
+    list-config-bars) get-config-bars "$1" ;;
+
+    list-monitor-bars) get-monitor-bars "$1" ;;
+
+    toggle | show | hide)
+      local -a win=()
+
+      if [ $# -eq 1 ] && [ "${1:0:1}" != '-' ]; then
+        set -- -m "$1"
+      fi
+
+      while getopts ":m:p:a" opt; do
+        case ${opt} in
+          a)
+            bspwm-helper list-monitors | while read -r monitor; do
+              polybar-helper "$cmd" -m "$monitor"
+            done
+            ;;
+          m) win+=("$(xdotool search --name --class "polybar-.+_${OPTARG}\$")") ;;
+          p) win+=("$(xdotool search --name --class "polybar-${OPTARG}_.+\$")") ;;
+          :) echo "Invalid option: $OPTARG requires an argument" >&2 ;;
+          *) echo "Invalid option: $OPTARG" >&2 ;;
+        esac
+      done
+      shift $((OPTIND - 1))
+
+      if [ ${#win[@]} -eq 0 ]; then
+        mapfile -t win < <(xdotool search --name --class 'polybar-')
+      fi
+
+      for w in "${win[@]}"; do
+        if [ "$w" = '' ]; then
+          echo "undefined window id" >&2
+          continue
+        else
+          echo "$cmd win=$w" >&2
+        fi
+        case "$cmd" in
+          show) xdotool windowmap "$w" ;;
+          hide) xdotool windowunmap "$w" ;;
+          toggle)
+            if xprop -id "$w" WM_STATE | grep -q Withdrawn; then
+              xdotool windowmap "$w"
+            else
+              xdotool windowunmap "$w"
+            fi
+            ;;
+        esac
+      done
+      ;;
+
+    toggle-volmod) "$XDG_CONFIG_HOME/polybar/scripts/toggle-volmod.sh" "$@" ;;
+
+    notify) show-notification "$@" ;;
+
+    pid) pgrep -f "^polybar.* ${1?bar}" ;;
+
+    monitor-pid) get-monitor-bars | xargs -I% pgrep -f "^polybar.* %" ;;
+
+    reload) "$XDG_CONFIG_HOME/polybar/reload" "$@" ;;
+
+    launch) "$XDG_CONFIG_HOME/polybar/launch" "$@" ;;
+
+    logs) logtail "$@" ;;
+
+    ipc-content)
+      local module="${1?module name}"
+      module="${module//\//\\/}"
+      module="${module//\[/\\[}"
+      module="${module//\]/\\]}"
+      sed -nr -e "/${module}/,/content/s/content[ ]*=[ ]*(.+)/\1/p;T;q" "${2:-$XDG_CONFIG_HOME/polybar/config.ini}" | sed -r -e 's/^"//' -e 's/"$//'
+      ;;
+
+    *)
+      echo "Invalid command: $cmd" >&2
+      exit 1
+      ;;
+  esac
+}
+
+if [ "$_" = "$0" ]; then
+  main "$@"
+fi

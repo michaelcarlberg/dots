@@ -1,0 +1,17 @@
+* {
+  bg0: #242736ee;
+  bg1: #2a2d3f;
+  bg2: #3a3d4f80;
+  bg3: #6664cc33;
+  fg0: #e3e6eecc;
+  fg1: #cbced0;
+  fg2: #e6e6ee99;
+  fg3: #93969E;
+  fg4: #9994ffff;
+}
+
+// window {
+//   fullscreen: true;
+// }
+
+@import "rounded-common.rasi"

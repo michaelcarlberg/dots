@@ -1,0 +1,4 @@
+#!/bin/sh
+# shellcheck disable=2034
+
+OPTS='-i control -i shift'

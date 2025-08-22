@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+
+set -e
+
+usage()
+{
+  [ "$1" ] && echo -e "$1\n" >&2
+  cat >&2 <<-EOF
+Usage: $0 [...opts] bar
+
+  -c, --config <file>
+  -r, --reload
+  -d, --daemon
+  -f, --force
+  -h, --help
+
+	EOF
+  exit 1
+}
+
+atexit()
+{
+  if [ "$DEBUG" != '1' ]; then
+    exec >/dev/null
+  fi
+  if [ "$1" -eq 0 ]; then
+    "$XDG_CONFIG_HOME"/polybar/scripts/vol.sh toggle-module &>/dev/null || :
+  fi
+}
+
+main()
+{
+  local optforce='false'
+  local optdaemon='false'
+  local logfile="$XDG_CACHE_HOME/polybar/%s.log"
+  local pidfile="$XDG_RUNTIME_DIR/polybar/%s.pid"
+  local -a args=(-l warning)
+
+  while [ "${1:0:1}" = "-" ]; do
+    case "$1" in
+      -d | --daemon)
+        optdaemon='true'
+        ;;
+      -f | --force)
+        optforce='true'
+        ;;
+      -c | --config)
+        args+=(-c "${2?config file}")
+        shift
+        ;;
+      -r | --reload)
+        args+=(-r)
+        ;;
+      -h | --help)
+        usage
+        ;;
+      *)
+        usage "Unknown option $1"
+        ;;
+    esac
+    shift
+  done
+
+  [ $# -eq 1 ] || usage
+
+  trap 'atexit $?' EXIT
+
+  # shellcheck disable=2059
+  pidfile="$(printf "$pidfile" "$1")"
+  # shellcheck disable=2059
+  logfile="$(printf "$logfile" "$1")"
+
+  mkdir -p "${pidfile%/*}"
+  mkdir -p "${logfile%/*}"
+
+  if [ -e "$logfile" ]; then
+    mv "$logfile" "${logfile}.1"
+  fi
+
+  if [ -s "$pidfile" ] && pgrep -F "$pidfile" >/dev/null && "$optforce"; then
+    pkill -F "$pidfile"
+    pkill -P "$(<"$pidfile")" || :
+    pidwait -F "$pidfile" || :
+  elif [ ! -s "$pidfile" ] && pgrep -x polybar &>/dev/null && "$optforce"; then
+    pkill -9 -e -f "polybar ${args[*]} $1"
+    sleep 1
+  fi
+
+  pgrep -f "^polybar .*$1" | while read -r pid; do
+    echo "already running: $pid (use -f to replace)" >&2
+    exit 1
+  done
+
+  set -- "${args[@]}" "$1"
+
+  if "$optdaemon"; then
+    nohup polybar "$@" &>"$logfile" &
+    echo $! >"$pidfile"
+    pgrep -a -F "$pidfile" | sed 's/--/\n  --/g'
+  else
+    echo $$ >"$pidfile"
+    echo $$ polybar "$@"
+    exec polybar "$@"
+  fi
+}
+
+# shfmt:ignore-begin
+[ "$DEBUG" = '1' ] && {
+  mv() { /usr/bin/mv -v "$@"; }
+  rm() { /usr/bin/rm -v "$@"; }
+  pkill() { /usr/bin/pkill -e "$@"; }
+}
+# shfmt:ignore-end
+
+main "$@"

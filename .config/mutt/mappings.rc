@@ -1,0 +1,53 @@
+#------------------------------------------------------------
+# Key bindings
+#------------------------------------------------------------
+
+# Read message
+bind index                      <Enter>   display-message
+
+# Moving around
+bind attach,browser,index       g         noop
+bind attach,browser,index       gg        first-entry
+bind attach,browser,index       G         last-entry
+bind pager                      g         noop
+bind pager                      gg        top
+bind pager                      G         bottom
+bind pager                      k         previous-line
+bind pager                      j         next-line
+
+# Scrolling
+bind attach,browser,index,pager \CF       next-page
+bind attach,browser,index,pager \CB       previous-page
+bind attach,browser,index,pager \Cu       half-up
+bind attach,browser,index,pager \Cd       half-down
+bind browser,pager              \Ce       next-line
+bind browser,pager              \Cy       previous-line
+bind index                      \Ce       next-line
+bind index                      \Cy       previous-line
+
+# Deletion
+bind index,pager                d         noop
+bind index,pager                dd        delete-message
+bind index,pager                D         noop
+bind index,pager                DD        purge-message
+
+# Threads
+bind browser,index,pager        N         search-opposite
+bind index,pager                dT        delete-thread
+bind index,pager                dt        delete-subthread
+bind index,pager                gt        next-thread
+bind index,pager                gT        previous-thread
+bind index                      za        collapse-thread
+bind index                      zA        collapse-all # Missing :folddisable/foldenable
+
+# Sidebar
+bind index,pager                \Ck       sidebar-prev
+bind index,pager                \Cj       sidebar-next
+bind index,pager                \Co       sidebar-open
+bind index,pager                <F3>      sidebar-page-up
+bind index,pager                <F4>      sidebar-page-down
+bind index,pager                <F5>      sidebar-prev-new
+bind index,pager                <F6>      sidebar-next-new
+bind index,pager                B         sidebar-toggle-visible
+
+# vim:ft=muttrc
