@@ -78,7 +78,7 @@ map <leader>j <Plug>(easymotion-s)
 
 " Open NERDTree (use q to exit)
 map <leader>op :NERDTreeFocus<CR>
-map <leader>or <action>(ManageRecentProjects)
+map <leader>oo <action>(OpenFile)
 
 " Folding
 map <leader>zc <action>(CollapseAllRegions)
@@ -111,6 +111,9 @@ map <leader><leader> <action>(RecentFiles)
 map <leader>fl <action>(RecentLocations)
 map <leader>fs <action>(NewScratchFile)
 
+" Projects
+map <leader>pr <action>(ManageRecentProjects)
+
 " Close active tab
 map <leader>q <action>(CloseContent)
 
@@ -121,6 +124,13 @@ map <leader>rv <action>(IntroduceVariable)
 map <leader>rf <action>(IntroduceField)
 map <leader>rs <action>(ChangeSignature)
 map <leader>rr <action>(Refactorings.QuickListPopupAction)
+
+" Run
+map <leader>Rr <action>(Run)
+map <leader>Rc <action>(RunClass)
+map <leader>Rd <action>(Debug)
+map <leader>RD <action>(DebugClass)
+map <leader>Rm <action>(Maven.ExecuteGoal)
 
 " Go to code
 nmap <leader>gd <action>(GotoDeclaration)
@@ -187,7 +197,10 @@ let g:WhichKeyDesc_optimize = "<leader>co Optimize imports"
 
 let g:WhichKeyDesc_open = "<leader>o Open"
 let g:WhichKeyDesc_open_file_explorer = "<leader>op File explorer"
-let g:WhichKeyDesc_open_recent_project = "<leader>or Recent projects"
+let g:WhichKeyDesc_open_file = "<leader>oo Open file"
+
+let g:WhichKeyDesc_projects = "<leader>p Projects"
+let g:WhichKeyDesc_projects_recent = "<leader>pr Recent projects"
 
 let g:WhichKeyDesc_fold = "<leader>z Folding"
 let g:WhichKeyDesc_fold_all = "<leader>zc Fold all regions"
@@ -228,6 +241,13 @@ let g:WhichKeyDesc_refactoring_variable = "<leader>rv Introduce variable"
 let g:WhichKeyDesc_refactoring_field = "<leader>rf Introduce field"
 let g:WhichKeyDesc_refactoring_signature = "<leader>rs Change signature"
 let g:WhichKeyDesc_refactoring_all = "<leader>rr Open refactorings list"
+
+let g:WhichKeyDesc_run = "<leader>R Run"
+let g:WhichKeyDesc_run_project = "<leader>Rr Run"
+let g:WhichKeyDesc_run_debug_project = "<leader>Rd Debug"
+let g:WhichKeyDesc_run_class = "<leader>Rc Run class"
+let g:WhichKeyDesc_run_debug_class = "<leader>RD Debug class"
+let g:WhichKeyDesc_run_maven = "<leader>Rm Execute maven goal"
 
 let g:WhichKeyDesc_goto = "<leader>g Go to X"
 let g:WhichKeyDesc_goto_declaration = "<leader>gd Go to Definition"
