@@ -57,6 +57,8 @@ xset -dpms
 xset +fp "$XDG_DATA_HOME/fonts"
 xset fp rehash
 
+light -S 50
+
 autocutsel -selection PRIMARY -fork
 
 [ -x "$XDG_CONFIG_HOME/xorg/configure-keyboard.sh" ] \
