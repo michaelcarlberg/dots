@@ -126,11 +126,11 @@ map <leader>rs <action>(ChangeSignature)
 map <leader>rr <action>(Refactorings.QuickListPopupAction)
 
 " Run
-map <leader>Rr <action>(Run)
-map <leader>Rc <action>(RunClass)
-map <leader>Rd <action>(Debug)
-map <leader>RD <action>(DebugClass)
-map <leader>Rm <action>(Maven.ExecuteGoal)
+map <leader>mr <action>(Run)
+map <leader>mc <action>(RunClass)
+map <leader>md <action>(Debug)
+map <leader>mD <action>(DebugClass)
+map <leader>mm <action>(Maven.ExecuteGoal)
 
 " Go to code
 nmap <leader>gd <action>(GotoDeclaration)
@@ -242,12 +242,12 @@ let g:WhichKeyDesc_refactoring_field = "<leader>rf Introduce field"
 let g:WhichKeyDesc_refactoring_signature = "<leader>rs Change signature"
 let g:WhichKeyDesc_refactoring_all = "<leader>rr Open refactorings list"
 
-let g:WhichKeyDesc_run = "<leader>R Run"
-let g:WhichKeyDesc_run_project = "<leader>Rr Run"
-let g:WhichKeyDesc_run_debug_project = "<leader>Rd Debug"
-let g:WhichKeyDesc_run_class = "<leader>Rc Run class"
-let g:WhichKeyDesc_run_debug_class = "<leader>RD Debug class"
-let g:WhichKeyDesc_run_maven = "<leader>Rm Execute maven goal"
+let g:WhichKeyDesc_run = "<leader>m Run"
+let g:WhichKeyDesc_run_project = "<leader>mr Run"
+let g:WhichKeyDesc_run_debug_project = "<leader>md Debug"
+let g:WhichKeyDesc_run_class = "<leader>mc Run class"
+let g:WhichKeyDesc_run_debug_class = "<leader>mD Debug class"
+let g:WhichKeyDesc_run_maven = "<leader>mm Execute maven goal"
 
 let g:WhichKeyDesc_goto = "<leader>g Go to X"
 let g:WhichKeyDesc_goto_declaration = "<leader>gd Go to Definition"
